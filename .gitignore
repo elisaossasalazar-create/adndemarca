@@ -39,6 +39,10 @@ yarn-error.log*
 # local sqlite database
 /data/
 
+# uploaded evidence photos (user content, not source code)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
