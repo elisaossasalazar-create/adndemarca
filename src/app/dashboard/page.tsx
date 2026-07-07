@@ -2,16 +2,25 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import {
   getUserById,
+  getAllUsers,
   hasJournalForDate,
   hasWeeklyCompletion,
   getExtraCompletionsForUser,
+  getJournalDatesForUser,
 } from "@/lib/db";
 import { getChallengesForWeek } from "@/lib/challenges";
-import { getTodayUTCString, getCurrentWeek, getMotivationalPhrase } from "@/lib/course";
+import {
+  getTodayUTCString,
+  getCurrentWeek,
+  getMotivationalPhrase,
+  getCourseStartString,
+} from "@/lib/course";
 import LogoutButton from "./logout-button";
 import JournalCard from "./journal-card";
 import WeeklyCard from "./weekly-card";
 import ExtraChallengeCard from "./extra-challenge-card";
+import CalendarTab from "./calendar-tab";
+import RankingTab from "./ranking-tab";
 import TabsLayout from "./tabs-layout";
 
 export default async function DashboardPage() {
@@ -24,6 +33,7 @@ export default async function DashboardPage() {
   const today = getTodayUTCString();
   const week = getCurrentWeek();
 
+  // Inicio tab data
   const journalDone = hasJournalForDate(user.id, today);
   const weeklyDone = hasWeeklyCompletion(user.id, week);
   const extraCompletions = getExtraCompletionsForUser(user.id);
@@ -33,6 +43,13 @@ export default async function DashboardPage() {
   );
   const weekChallenges = getChallengesForWeek(week);
   const phrase = getMotivationalPhrase();
+
+  // Calendar tab data
+  const journalDates = getJournalDatesForUser(user.id);
+  const courseStartStr = getCourseStartString();
+
+  // Ranking tab data
+  const allUsers = getAllUsers();
 
   const inicioContent = (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
@@ -58,20 +75,25 @@ export default async function DashboardPage() {
   );
 
   const calendarioContent = (
-    <div className="flex flex-col items-center py-16 text-center text-neutral-400">
-      <p className="text-sm">El calendario llega en la próxima iteración.</p>
-    </div>
+    <CalendarTab
+      completedDates={journalDates}
+      courseStartDate={courseStartStr}
+    />
   );
 
   const rankingContent = (
-    <div className="flex flex-col items-center py-16 text-center text-neutral-400">
-      <p className="text-sm">El ranking llega en la próxima iteración.</p>
-    </div>
+    <RankingTab
+      users={allUsers.map((u) => ({
+        id: u.id,
+        full_name: u.full_name,
+        points_total: u.points_total,
+      }))}
+      currentUserId={user.id}
+    />
   );
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-neutral-900">
-      {/* Header */}
       <header className="border-b border-neutral-100 px-6 py-4">
         <div className="flex items-start justify-between gap-3">
           <div>

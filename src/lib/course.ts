@@ -1,6 +1,6 @@
 // Fecha de inicio del curso — ajustar en .env o aquí directamente
 // Formato ISO: "YYYY-MM-DD"
-const RAW_START = process.env.COURSE_START_DATE ?? "2026-07-07";
+const RAW_START = process.env.COURSE_START_DATE ?? "2026-07-19";
 
 function parseDateUTC(dateStr: string): Date {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -9,6 +9,10 @@ function parseDateUTC(dateStr: string): Date {
 
 export function getCourseStartDate(): Date {
   return parseDateUTC(RAW_START);
+}
+
+export function getCourseStartString(): string {
+  return RAW_START;
 }
 
 export function getTodayUTCString(): string {
