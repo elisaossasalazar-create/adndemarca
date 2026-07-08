@@ -31,11 +31,12 @@ export default function TabsLayout({ inicio, calendario, ranking }: Props) {
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className={`py-3 text-sm font-medium transition ${
+              className={`py-3 text-sm font-medium transition-colors ${
                 active === tab.id
-                  ? "border-b-2 border-neutral-900 text-neutral-900"
+                  ? "border-b-2 text-neutral-900"
                   : "text-neutral-400 hover:text-neutral-600"
               }`}
+              style={active === tab.id ? { borderColor: "var(--brand-pink)", color: "var(--foreground)" } : {}}
             >
               {tab.label}
             </button>

@@ -6,31 +6,31 @@ function shell(name: string, body: string): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ADN de Marca</title>
+  <title>The Brand Camp · ADN de Marca</title>
 </head>
-<body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#B6DAEE;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#B6DAEE;padding:32px 16px;">
     <tr><td align="center">
-      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:20px;overflow:hidden;">
 
         <!-- Header -->
         <tr>
-          <td style="padding:28px 32px 0;border-bottom:1px solid #f0f0f0;">
-            <p style="margin:0 0 4px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#999999;">ADN de Marca · 7ma Edición</p>
+          <td style="padding:24px 32px;background:#FF63A6;">
+            <p style="margin:0;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.85);">The Brand Camp · ADN de Marca · 7ma Edición</p>
           </td>
         </tr>
 
         <!-- Body -->
         <tr>
           <td style="padding:28px 32px;">
-            <p style="margin:0 0 20px;font-size:15px;color:#444444;">Hola, <strong>${name}</strong> 👋</p>
+            <p style="margin:0 0 20px;font-size:15px;color:#444444;">Hola, <strong>${name}</strong> ✨</p>
             ${body}
           </td>
         </tr>
 
         <!-- Footer -->
         <tr>
-          <td style="padding:20px 32px;border-top:1px solid #f0f0f0;background:#fafafa;">
+          <td style="padding:20px 32px;border-top:1px solid #f0f0f0;background:#fffdf0;">
             <p style="margin:0;font-size:11px;color:#bbbbbb;text-align:center;">
               Recibes este correo porque estás inscrita/o en el reto ADN de Marca.
             </p>
@@ -45,7 +45,7 @@ function shell(name: string, body: string): string {
 }
 
 function ctaButton(text: string, url: string): string {
-  return `<a href="${url}" style="display:inline-block;margin-top:24px;padding:14px 28px;background:#171717;color:#ffffff;text-decoration:none;border-radius:100px;font-size:14px;font-weight:600;">${text}</a>`;
+  return `<a href="${url}" style="display:inline-block;margin-top:24px;padding:14px 28px;background:#FF63A6;color:#ffffff;text-decoration:none;border-radius:100px;font-size:14px;font-weight:700;">${text}</a>`;
 }
 
 // ── Escenario 1: no ha hecho el journaling de hoy ─────────────────────────────

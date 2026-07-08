@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { markExtraComplete } from "@/app/actions";
 import { POINTS, type Challenge } from "@/lib/challenges";
+import { Star } from "@/components/star";
 
 interface Props {
   challenge: Challenge;
@@ -37,7 +38,13 @@ export default function ExtraChallengeCard({ challenge, done, evidenceFilename }
   }
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white">
+    <div
+      className="rounded-2xl border"
+      style={done
+        ? { borderColor: "var(--brand-yellow)", backgroundColor: "#fffdf0" }
+        : { borderColor: "#e5e5e5", backgroundColor: "white" }
+      }
+    >
       {/* Header row */}
       <button
         type="button"
@@ -46,26 +53,32 @@ export default function ExtraChallengeCard({ challenge, done, evidenceFilename }
       >
         <div className="flex items-center gap-3">
           {done ? (
-            <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-neutral-900 text-xs text-white">
-              ✓
+            <span
+              className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
+              style={{ backgroundColor: "var(--brand-yellow)" }}
+            >
+              <Star size={13} />
             </span>
           ) : (
-            <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 border-neutral-300" />
+            <span
+              className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2"
+              style={{ borderColor: "var(--brand-pink)" }}
+            />
           )}
-          <span className={`text-sm font-medium ${done ? "text-neutral-400" : "text-neutral-900"}`}>
+          <span className={`text-sm font-medium lowercase ${done ? "text-neutral-400" : "text-neutral-900"}`}>
             {challenge.title}
           </span>
         </div>
         <div className="flex flex-shrink-0 items-center gap-2">
-          <span className="text-xs text-neutral-400">+{POINTS.EXTRA_CHALLENGE} pts</span>
-          <span className="text-neutral-400">{expanded ? "▲" : "▼"}</span>
+          <span className="text-xs font-normal text-neutral-400">+{POINTS.EXTRA_CHALLENGE} pts</span>
+          <span className="text-neutral-400 text-xs">{expanded ? "▲" : "▼"}</span>
         </div>
       </button>
 
       {/* Expanded panel */}
       {expanded && (
         <div className="border-t border-neutral-100 px-5 pb-5 pt-4">
-          <p className="text-sm text-neutral-700 leading-relaxed">{challenge.description}</p>
+          <p className="text-sm font-normal text-neutral-700 leading-relaxed">{challenge.description}</p>
 
           {done ? (
             <div className="mt-4">
@@ -80,9 +93,8 @@ export default function ExtraChallengeCard({ challenge, done, evidenceFilename }
           ) : (
             <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3">
               <label className="flex flex-col gap-1 text-xs">
-                <span className="font-medium text-neutral-700">
-                  Foto de evidencia{" "}
-                  <span className="text-red-500">*</span>
+                <span className="font-medium text-neutral-600 uppercase tracking-wide">
+                  Foto de evidencia <span className="text-red-500">*</span>
                 </span>
                 <input
                   ref={fileRef}
@@ -91,18 +103,20 @@ export default function ExtraChallengeCard({ challenge, done, evidenceFilename }
                   accept="image/*"
                   required
                   onChange={(e) => setFileSelected(!!e.target.files?.[0])}
-                  className="text-xs text-neutral-600 file:mr-3 file:rounded-full file:border-0 file:bg-neutral-100 file:px-3 file:py-1 file:text-xs file:font-medium file:text-neutral-700"
+                  className="text-xs text-neutral-600 file:mr-3 file:rounded-full file:border-0 file:px-3 file:py-1 file:text-xs file:font-bold file:text-white"
+                  style={{ ["--file-bg" as string]: "var(--brand-pink)" }}
                 />
               </label>
 
-              {error && <p className="text-xs text-red-600">{error}</p>}
+              {error && <p className="text-xs text-red-500">{error}</p>}
 
               <button
                 type="submit"
                 disabled={pending || !fileSelected}
-                className="self-start rounded-full bg-neutral-900 px-4 py-2 text-xs font-medium text-white transition hover:bg-neutral-700 disabled:opacity-40"
+                className="self-start rounded-full px-4 py-2 text-xs font-bold text-white transition hover:opacity-90 disabled:opacity-40"
+                style={{ backgroundColor: "var(--brand-pink)" }}
               >
-                {pending ? "Subiendo…" : "Marcar como completado"}
+                {pending ? "subiendo…" : "marcar como completado"}
               </button>
             </form>
           )}

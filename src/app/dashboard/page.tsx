@@ -15,6 +15,7 @@ import {
   getMotivationalPhrase,
   getCourseStartString,
 } from "@/lib/course";
+import { Star, PinkStar } from "@/components/star";
 import LogoutButton from "./logout-button";
 import JournalCard from "./journal-card";
 import WeeklyCard from "./weekly-card";
@@ -33,7 +34,6 @@ export default async function DashboardPage() {
   const today = getTodayUTCString();
   const week = getCurrentWeek();
 
-  // Inicio tab data
   const journalDone = hasJournalForDate(user.id, today);
   const weeklyDone = hasWeeklyCompletion(user.id, week);
   const extraCompletions = getExtraCompletionsForUser(user.id);
@@ -44,11 +44,9 @@ export default async function DashboardPage() {
   const weekChallenges = getChallengesForWeek(week);
   const phrase = getMotivationalPhrase();
 
-  // Calendar tab data
   const journalDates = getJournalDatesForUser(user.id);
   const courseStartStr = getCourseStartString();
 
-  // Ranking tab data
   const allUsers = getAllUsers();
 
   const inicioContent = (
@@ -94,26 +92,30 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-neutral-900">
-      <header className="border-b border-neutral-100 px-6 py-4">
+      <header className="px-6 py-4 border-b border-neutral-100">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-medium tracking-wide text-neutral-400">
-              ADN de Marca · 7ma Edición
+            <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400">
+              The Brand Camp · 7ma Edición
             </p>
-            <p className="mt-0.5 text-lg font-semibold leading-tight">
+            <p className="mt-0.5 text-xl font-bold lowercase leading-tight">
               {user.full_name}
             </p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <div className="flex items-center gap-2 rounded-full bg-neutral-900 px-3 py-1">
-              <span className="text-xs font-semibold text-white">
+            <div
+              className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
+              style={{ backgroundColor: "var(--brand-yellow)" }}
+            >
+              <Star size={13} />
+              <span className="text-xs font-bold text-neutral-900">
                 {user.points_total} pts
               </span>
             </div>
             <LogoutButton />
           </div>
         </div>
-        <p className="mt-3 text-xs text-neutral-500 italic">{phrase}</p>
+        <p className="mt-3 text-xs font-normal text-neutral-400 italic">{phrase}</p>
       </header>
 
       <TabsLayout

@@ -32,8 +32,8 @@ export default async function AdminPage() {
           >
             ← Dashboard
           </a>
-          <h1 className="mt-3 text-2xl font-bold text-neutral-900">Panel de Administración</h1>
-          <p className="mt-1 text-sm text-neutral-500">ADN de Marca · 7ma Edición</p>
+          <h1 className="mt-3 text-2xl font-bold lowercase text-neutral-900">panel de administración</h1>
+          <p className="mt-1 text-xs tracking-[0.2em] uppercase text-neutral-400">The Brand Camp · ADN de Marca · 7ma Edición</p>
         </div>
 
         {/* ── Configuración de puntos ── */}
@@ -91,7 +91,8 @@ export default async function AdminPage() {
               <div className="mt-5 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-neutral-900 text-white text-sm font-medium px-5 py-2.5 rounded-full hover:bg-neutral-700 transition-colors"
+                  className="text-white text-sm font-bold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity"
+                  style={{ backgroundColor: "var(--brand-pink)" }}
                 >
                   Guardar cambios
                 </button>
