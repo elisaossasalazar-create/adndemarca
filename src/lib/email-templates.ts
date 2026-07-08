@@ -50,63 +50,54 @@ function ctaButton(text: string, url: string): string {
 
 // ── Escenario 1: no ha hecho el journaling de hoy ─────────────────────────────
 export function journalReminderEmail(name: string, points: number): { subject: string; html: string } {
-  const subject = "Hoy todavía no has escrito tu journal ✍️";
+  const subject = "✍🏼 tus 3 hojas diarias te están esperandooo";
   const html = shell(
     name,
-    `<p style="margin:0 0 12px;font-size:22px;font-weight:700;color:#171717;line-height:1.3;">
-      Tu journal de hoy te está esperando.
+    `<p style="margin:0 0 16px;font-size:15px;color:#555555;line-height:1.7;">
+      son sólo 30 minutos que pueden ayudarte a desenredar lo que hay en tu mente
+      para que te liberes creativamente, you got thisss superstar,
+      ve y completa tus páginas del día 🌟
     </p>
-    <p style="margin:0 0 12px;font-size:15px;color:#555555;line-height:1.6;">
-      Son solo 3 páginas. No tienen que ser perfectas — solo honestas.
-      Cada día que escribes estás construyendo tu marca desde adentro.
+    <p style="margin:0;font-size:13px;color:#999999;line-height:1.6;">
+      Al marcarlo como completado sumas <strong>+${points} puntos</strong> en el ranking.
     </p>
-    <p style="margin:0;font-size:15px;color:#555555;line-height:1.6;">
-      Además, sumas <strong>+${points} puntos</strong> al marcarlo como completado.
-      Cada punto cuenta para el ranking final.
-    </p>
-    ${ctaButton("Ir a completar mi journaling →", `${BASE_URL}/dashboard`)}`
+    ${ctaButton("completar mi journaling de hoy →", `${BASE_URL}/dashboard`)}`
   );
   return { subject, html };
 }
 
 // ── Escenario 2: journaling hecho, falta el reto de Hotmart ──────────────────
 export function hotmartReminderEmail(name: string, week: number, points: number): { subject: string; html: string } {
-  const subject = "Falta una cosa importante esta semana 👀";
+  const subject = "🥹 tenemos un pendiente ...";
   const html = shell(
     name,
-    `<p style="margin:0 0 12px;font-size:22px;font-weight:700;color:#171717;line-height:1.3;">
-      Tu journaling de hoy: ✓. Pero falta algo.
+    `<p style="margin:0 0 16px;font-size:15px;color:#555555;line-height:1.7;">
+      amooo ver que estás comprometida con tus morning pagesss 🫶
+      peeero plis no me dejes en el olvido el reto semanal de Hotmart —
+      recuerda dejar en la sección de comunidad tu reto de la semana ${week}.
     </p>
-    <p style="margin:0 0 12px;font-size:15px;color:#555555;line-height:1.6;">
-      Todavía no has subido tu entregable de la semana ${week} a la comunidad de Hotmart.
-      Ese es el reto que más pesa: pasar a la acción y mostrarte.
+    <p style="margin:0;font-size:13px;color:#999999;line-height:1.6;">
+      Cuando lo marques como hecho sumas <strong>+${points} puntos</strong> de un golpe.
     </p>
-    <p style="margin:0;font-size:15px;color:#555555;line-height:1.6;">
-      Cuando lo hagas, marca el reto como completado en la app y sumas
-      <strong>+${points} puntos</strong> de un golpe.
-    </p>
-    ${ctaButton("Marcar reto de Hotmart como hecho →", `${BASE_URL}/dashboard`)}`
+    ${ctaButton("marcar reto de Hotmart como hecho →", `${BASE_URL}/dashboard`)}`
   );
   return { subject, html };
 }
 
-// ── Escenario 3: diario + Hotmart hechos, no ha tomado retos extra ────────────
+// ── Escenario 3: diario + Hotmart hechos, no ha tocado retos extra ────────────
 export function extrasMotivationEmail(name: string, points: number): { subject: string; html: string } {
-  const subject = "Ya hiciste lo importante — ahora ve por los puntos extra 🏆";
+  const subject = "👀 y si nos lanzamos con un reto?";
   const html = shell(
     name,
-    `<p style="margin:0 0 12px;font-size:22px;font-weight:700;color:#171717;line-height:1.3;">
-      Journaling ✓ · Hotmart ✓<br/>¿Y los retos extra?
+    `<p style="margin:0 0 16px;font-size:15px;color:#555555;line-height:1.7;">
+      my little superstar verteee tan activa me da mil años de vida 🌈
+      y sé que lanzarte con uno de los retos extra va a terminar de llevarte al estrellato —
+      ¿ya viste los retos extra de esta semana?
     </p>
-    <p style="margin:0 0 12px;font-size:15px;color:#555555;line-height:1.6;">
-      Ya tienes lo obligatorio de esta semana. Eso ya te pone por encima de muchos.
-      Pero si quieres escalar en el ranking, los retos extra son tu oportunidad.
-    </p>
-    <p style="margin:0;font-size:15px;color:#555555;line-height:1.6;">
+    <p style="margin:0;font-size:13px;color:#999999;line-height:1.6;">
       Cada reto completado con evidencia suma <strong>+${points} puntos</strong>.
-      Elige uno que se sienta pequeño y hazlo hoy.
     </p>
-    ${ctaButton("Ver los retos extra de esta semana →", `${BASE_URL}/dashboard`)}`
+    ${ctaButton("ver los retos extra →", `${BASE_URL}/dashboard`)}`
   );
   return { subject, html };
 }
