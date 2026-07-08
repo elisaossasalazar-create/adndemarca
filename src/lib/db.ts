@@ -158,6 +158,15 @@ export function addWeeklyCompletion(userId: string, weekNumber: number, points: 
 
 // ── Extra challenge completions ───────────────────────────────────────────────
 
+export function hasAnyExtraForWeek(userId: string, weekChallengeIds: string[]): boolean {
+  if (weekChallengeIds.length === 0) return false;
+  const db = getDb();
+  const placeholders = weekChallengeIds.map(() => "?").join(",");
+  return !!db
+    .prepare(`SELECT id FROM extra_completions WHERE user_id = ? AND challenge_id IN (${placeholders}) LIMIT 1`)
+    .get(userId, ...weekChallengeIds);
+}
+
 export function hasExtraCompletion(userId: string, challengeId: string): boolean {
   const db = getDb();
   return !!db.prepare("SELECT id FROM extra_completions WHERE user_id = ? AND challenge_id = ?").get(userId, challengeId);
