@@ -5,12 +5,14 @@ export interface Challenge {
   description: string;
 }
 
-// Puntos por tipo de reto — cambiar aquí para ajustar la gamificación
+// Puntos por tipo de reto — valores por defecto; el admin puede sobreescribirlos en /admin
 export const POINTS = {
   JOURNAL_DAILY: 10,
   WEEKLY_HOTMART: 50,
   EXTRA_CHALLENGE: 20,
 } as const;
+
+export type PointsConfig = { JOURNAL_DAILY: number; WEEKLY_HOTMART: number; EXTRA_CHALLENGE: number };
 
 export const ALL_CHALLENGES: Challenge[] = [
   // ── Semana 1 — Diferencial ──────────────────────────────────────────────

@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { auth } from "@/auth";
 import { addJournalCompletion, addWeeklyCompletion, addExtraCompletion } from "@/lib/db";
-import { POINTS } from "@/lib/challenges";
+import { getEffectivePoints } from "@/lib/points.server";
 import { getTodayUTCString, getCurrentWeek } from "@/lib/course";
 
 async function getAuthUserId(): Promise<string> {
@@ -19,14 +19,16 @@ async function getAuthUserId(): Promise<string> {
 export async function markJournalComplete() {
   const userId = await getAuthUserId();
   const today = getTodayUTCString();
-  addJournalCompletion(userId, today, POINTS.JOURNAL_DAILY);
+  const pts = getEffectivePoints();
+  addJournalCompletion(userId, today, pts.JOURNAL_DAILY);
   revalidatePath("/dashboard");
 }
 
 export async function markWeeklyComplete() {
   const userId = await getAuthUserId();
   const week = getCurrentWeek();
-  addWeeklyCompletion(userId, week, POINTS.WEEKLY_HOTMART);
+  const pts = getEffectivePoints();
+  addWeeklyCompletion(userId, week, pts.WEEKLY_HOTMART);
   revalidatePath("/dashboard");
 }
 
@@ -49,6 +51,7 @@ export async function markExtraComplete(formData: FormData) {
   const bytes = await file.arrayBuffer();
   writeFileSync(join(uploadsDir, filename), Buffer.from(bytes));
 
-  addExtraCompletion(userId, challengeId, filename, POINTS.EXTRA_CHALLENGE);
+  const pts = getEffectivePoints();
+  addExtraCompletion(userId, challengeId, filename, pts.EXTRA_CHALLENGE);
   revalidatePath("/dashboard");
 }

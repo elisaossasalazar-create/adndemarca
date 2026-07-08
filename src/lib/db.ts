@@ -52,6 +52,11 @@ function getDb(): DatabaseSync {
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
         UNIQUE(user_id, challenge_id)
       );
+
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      );
     `);
     global.__db = db;
   }
@@ -187,6 +192,78 @@ export function addExtraCompletion(userId: string, challengeId: string, evidence
     db.prepare("UPDATE users SET points_total = points_total + ? WHERE id = ?").run(points, userId);
     db.exec("COMMIT");
     return true;
+  } catch (e) {
+    db.exec("ROLLBACK");
+    throw e;
+  }
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+
+export function getSetting(key: string): string | undefined {
+  const db = getDb();
+  const row = db.prepare("SELECT value FROM settings WHERE key = ?").get(key) as { value: string } | undefined;
+  return row?.value;
+}
+
+export function setSetting(key: string, value: string): void {
+  const db = getDb();
+  db.prepare(
+    "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
+  ).run(key, value);
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+
+export interface AdminUserRow {
+  id: string;
+  full_name: string;
+  email: string;
+  social_handle: string;
+  phone: string;
+  points_total: number;
+  created_at: string;
+  journal_count: number;
+  weekly_count: number;
+  extra_count: number;
+}
+
+export function getAllUsersWithStats(): AdminUserRow[] {
+  const db = getDb();
+  return db
+    .prepare(
+      `SELECT
+         u.id, u.full_name, u.email, u.social_handle, u.phone,
+         u.points_total, u.created_at,
+         COUNT(DISTINCT j.id) AS journal_count,
+         COUNT(DISTINCT w.id) AS weekly_count,
+         COUNT(DISTINCT e.id) AS extra_count
+       FROM users u
+       LEFT JOIN journal_completions j ON j.user_id = u.id
+       LEFT JOIN weekly_completions w  ON w.user_id  = u.id
+       LEFT JOIN extra_completions  e  ON e.user_id  = u.id
+       GROUP BY u.id
+       ORDER BY u.points_total DESC`
+    )
+    .all() as unknown as AdminUserRow[];
+}
+
+export function adjustUserPointsDelta(userId: string, delta: number): void {
+  const db = getDb();
+  db.prepare(
+    "UPDATE users SET points_total = MAX(0, points_total + ?) WHERE id = ?"
+  ).run(delta, userId);
+}
+
+export function deleteUser(userId: string): void {
+  const db = getDb();
+  db.exec("BEGIN");
+  try {
+    db.prepare("DELETE FROM extra_completions WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM weekly_completions WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM journal_completions WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM users WHERE id = ?").run(userId);
+    db.exec("COMMIT");
   } catch (e) {
     db.exec("ROLLBACK");
     throw e;

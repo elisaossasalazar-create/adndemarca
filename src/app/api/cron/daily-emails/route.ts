@@ -5,7 +5,8 @@ import {
   hasWeeklyCompletion,
   hasAnyExtraForWeek,
 } from "@/lib/db";
-import { getChallengesForWeek, POINTS } from "@/lib/challenges";
+import { getChallengesForWeek } from "@/lib/challenges";
+import { getEffectivePoints } from "@/lib/points.server";
 import { getTodayUTCString, getCurrentWeek, getCourseStartDate } from "@/lib/course";
 import { sendEmail } from "@/lib/email";
 import {
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
   const week = getCurrentWeek();
   const weekChallengeIds = getChallengesForWeek(week).map((c) => c.id);
   const users = getAllUsers();
+  const pts = getEffectivePoints();
 
   const results: Array<{ email: string; scenario: string; status: string }> = [];
 
@@ -58,13 +60,13 @@ export async function POST(request: Request) {
 
     if (!journalDone) {
       scenario = "journal";
-      emailContent = journalReminderEmail(user.full_name, POINTS.JOURNAL_DAILY);
+      emailContent = journalReminderEmail(user.full_name, pts.JOURNAL_DAILY);
     } else if (!weeklyDone) {
       scenario = "hotmart";
-      emailContent = hotmartReminderEmail(user.full_name, week, POINTS.WEEKLY_HOTMART);
+      emailContent = hotmartReminderEmail(user.full_name, week, pts.WEEKLY_HOTMART);
     } else if (!anyExtraDone) {
       scenario = "extras";
-      emailContent = extrasMotivationEmail(user.full_name, POINTS.EXTRA_CHALLENGE);
+      emailContent = extrasMotivationEmail(user.full_name, pts.EXTRA_CHALLENGE);
     } else {
       scenario = "none";
     }
