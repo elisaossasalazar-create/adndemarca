@@ -1,4 +1,4 @@
-export function Star({ size = 16, className = "" }: { size?: number; className?: string }) {
+export function Star({ size = 16, className = "" }: { size?: number | string; className?: string }) {
   return (
     <svg
       width={size}
@@ -16,7 +16,7 @@ export function Star({ size = 16, className = "" }: { size?: number; className?:
   );
 }
 
-export function PinkStar({ size = 16, className = "" }: { size?: number; className?: string }) {
+export function PinkStar({ size = 16, className = "" }: { size?: number | string; className?: string }) {
   return (
     <svg
       width={size}
