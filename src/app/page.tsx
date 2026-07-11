@@ -1,6 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Star, PinkStar } from "@/components/star";
-import { TheBrandCampLogo } from "@/components/logo";
 
 export default function HomePage() {
   return (
@@ -26,7 +26,14 @@ export default function HomePage() {
           <Star size={18} />
         </div>
 
-        <TheBrandCampLogo className="text-[64px] sm:text-[88px]" />
+        <Image
+          src="/logo.png"
+          alt="The Brand Camp · ADN de Marca"
+          width={320}
+          height={280}
+          className="w-64 sm:w-80"
+          priority
+        />
 
         <p className="mt-5 max-w-md text-base font-normal text-neutral-500 leading-relaxed">
           la acción trae claridad, y por esooo durante el curso de ADN DE MARCA
