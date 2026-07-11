@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star, BlueStar } from "@/components/star";
+import { Star, PinkStar } from "@/components/star";
 
 const DAY_LABELS = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
 
@@ -118,7 +118,7 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
                 }}
               >
                 {isCompleted ? (
-                  <BlueStar size={18} />
+                  <PinkStar size={18} />
                 ) : (
                   <span className="text-xs leading-none font-medium">
                     {cell.day}
