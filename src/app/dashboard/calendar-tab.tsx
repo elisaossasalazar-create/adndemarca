@@ -113,7 +113,7 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
                   ${isBeforeStart || isAfterToday ? "text-neutral-300" : "text-neutral-700"}
                 `}
                 style={{
-                  backgroundColor: isCompleted ? "var(--brand-yellow)" : undefined,
+                  backgroundColor: isCompleted ? "var(--brand-blue)" : undefined,
                   ...(isToday ? { outline: `2px solid var(--brand-pink)`, outlineOffset: "2px" } : {}),
                 }}
               >
@@ -135,9 +135,9 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
         <div className="flex items-center gap-1.5">
           <div
             className="flex h-5 w-5 items-center justify-center rounded-full"
-            style={{ backgroundColor: "var(--brand-yellow)" }}
+            style={{ backgroundColor: "var(--brand-blue)" }}
           >
-            <Star size={10} />
+            <PinkStar size={10} />
           </div>
           <span>Journaling hecho</span>
         </div>
