@@ -29,9 +29,9 @@ export default function HomePage() {
         <Image
           src="/logo.png"
           alt="The Brand Camp · ADN de Marca"
-          width={320}
-          height={280}
-          className="w-64 sm:w-80"
+          width={380}
+          height={330}
+          className="w-80 sm:w-96 -ml-6"
           priority
         />
 
