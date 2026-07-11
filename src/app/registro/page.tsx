@@ -162,6 +162,7 @@ export default function RegistroPage() {
                   }
                   className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-base outline-none focus:border-[#FF63A6] transition-colors"
                 />
+              </div>
 
               {error && <p className="text-sm text-red-500">{error}</p>}
 
