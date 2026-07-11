@@ -58,23 +58,6 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="px-6 py-10" style={{ backgroundColor: "var(--brand-blue)" }}>
-        <div className="mx-auto max-w-2xl text-center">
-          <div className="flex justify-center mb-3">
-            <Star size={28} />
-          </div>
-          <h2 className="mb-3 text-lg font-bold lowercase text-neutral-900">
-            qué es el curso de ADN DE MARCA?
-          </h2>
-          <p className="text-sm font-normal text-neutral-700 leading-relaxed">
-            éste es un curso 100% enfocado en ADN DE MARCA, donde aprenderás a
-            identificar el diferencial de tu marca y construir una identidad
-            atractiva a partir de tu autenticidad, para convertirte en la
-            superestrella de tu nicho
-          </p>
-        </div>
-      </footer>
-
       <div
         className="px-6 py-4 flex items-center justify-between"
         style={{ backgroundColor: "var(--brand-pink)" }}
