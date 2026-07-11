@@ -75,27 +75,26 @@ export default function HomePage() {
         </div>
       </footer>
 
-      <div className="px-6 py-8 bg-white border-t border-neutral-100">
-        <div className="mx-auto max-w-sm flex flex-col sm:flex-row gap-3">
-          <a
-            href="https://chatgpt.com/g/g-684b7b1862b481918624a11bf6959f29-brand-stein"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 rounded-full border border-neutral-200 px-5 py-3 text-sm font-medium text-neutral-700 transition hover:border-neutral-400 hover:bg-neutral-50"
-          >
-            <Star size={14} />
-            brandstein
-          </a>
-          <a
-            href="https://app.hotmart.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center rounded-full px-5 py-3 text-sm font-bold text-white transition hover:opacity-90"
-            style={{ backgroundColor: "var(--brand-pink)" }}
-          >
-            hotmart
-          </a>
-        </div>
+      <div
+        className="px-6 py-4 flex items-center justify-between"
+        style={{ backgroundColor: "var(--brand-pink)" }}
+      >
+        <a
+          href="https://chatgpt.com/g/g-684b7b1862b481918624a11bf6959f29-brand-stein"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-bold text-white hover:opacity-75 transition-opacity"
+        >
+          brand-stein
+        </a>
+        <a
+          href="https://app.hotmart.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-bold text-white hover:opacity-75 transition-opacity"
+        >
+          hotmart
+        </a>
       </div>
     </div>
   );
