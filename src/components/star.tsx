@@ -6,7 +6,7 @@ export function Star({ size = 16, className = "" }: { size?: number; className?:
       viewBox="0 0 24 24"
       fill="#FFE787"
       stroke="#171717"
-      strokeWidth="1.5"
+      strokeWidth="0.75"
       strokeLinejoin="round"
       className={className}
       aria-hidden
@@ -24,7 +24,7 @@ export function PinkStar({ size = 16, className = "" }: { size?: number; classNa
       viewBox="0 0 24 24"
       fill="#FF63A6"
       stroke="#171717"
-      strokeWidth="1.5"
+      strokeWidth="0.75"
       strokeLinejoin="round"
       className={className}
       aria-hidden

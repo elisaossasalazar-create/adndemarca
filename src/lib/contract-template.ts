@@ -1,3 +1,6 @@
+export const CONTRACT_STATEMENT =
+  "me comprometo a NO quedarme con la información que aprenda en el curso, la llevaré a la acción por mucho que me cueste, me rete, o mi mente quiera detenerme, me voy a lanzar";
+
 export interface ContractBlank {
   id: string;
   before: string;
@@ -5,33 +8,12 @@ export interface ContractBlank {
   placeholder: string;
 }
 
-// Plantilla provisional del "contrato consigo misma". La redacción final se
-// definirá en una iteración posterior; esta estructura de espacios en blanco
-// se mantiene igual aunque cambie el texto.
 export const CONTRACT_TEMPLATE: ContractBlank[] = [
   {
-    id: "compromiso",
-    before: "Me comprometo a ",
-    after: " durante estas 5 semanas.",
-    placeholder: "ej. escribir mi journal todos los días",
-  },
-  {
-    id: "recordar",
-    before: "Cuando sienta ganas de rendirme, voy a recordar que ",
-    after: ".",
-    placeholder: "ej. esto lo hago por mí",
-  },
-  {
-    id: "final",
-    before: "Al final de este curso quiero poder decir que ",
-    after: ".",
-    placeholder: "ej. construí una marca que me representa",
-  },
-  {
-    id: "persona",
-    before: "La persona en la que me quiero convertir al terminar este reto es alguien que ",
-    after: ".",
-    placeholder: "ej. actúa en vez de solo pensarlo",
+    id: "firma",
+    before: "",
+    after: "",
+    placeholder: "escribe tu nombre para firmar",
   },
 ];
 

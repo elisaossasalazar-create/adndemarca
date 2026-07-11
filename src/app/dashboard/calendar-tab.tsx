@@ -110,7 +110,6 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
             <div key={dateStr} className="flex h-9 flex-col items-center justify-center">
               <div
                 className={`relative flex h-8 w-8 flex-col items-center justify-center rounded-full text-xs transition-all
-                  ${isToday ? "ring-2 ring-offset-1" : ""}
                   ${isBeforeStart || isAfterToday ? "text-neutral-300" : "text-neutral-700"}
                 `}
                 style={{
@@ -118,12 +117,11 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
                   ...(isToday ? { outline: `2px solid var(--brand-pink)`, outlineOffset: "2px" } : {}),
                 }}
               >
-                <span className="text-xs leading-none font-medium">
-                  {cell.day}
-                </span>
-                {isCompleted && (
-                  <span className="absolute -bottom-1 flex items-center justify-center">
-                    <Star size={9} />
+                {isCompleted ? (
+                  <Star size={18} />
+                ) : (
+                  <span className="text-xs leading-none font-medium">
+                    {cell.day}
                   </span>
                 )}
               </div>

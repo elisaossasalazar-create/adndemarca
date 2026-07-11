@@ -26,12 +26,13 @@ export default function HomePage() {
         </div>
 
         <h1 className="max-w-lg text-4xl font-bold leading-tight sm:text-5xl lowercase">
-          construye tu marca pasando a la acción
+          the brand camp
         </h1>
 
         <p className="mt-5 max-w-md text-base font-normal text-neutral-500 leading-relaxed">
-          retos diarios y semanales para descubrir, construir y comunicar tu
-          marca. suma puntos, mantén tu racha y compite por los premios finales.
+          la acción trae claridad, y por esooo durante el curso de ADN DE MARCA
+          tendremos retos diarios y semanales para lanzarnos con todo y miedo,
+          te vas a dar cuenta que la vida premia a los valientes, r u readyyyy?
         </p>
 
         <div className="mt-10 flex w-full max-w-xs flex-col gap-3">
@@ -57,16 +58,13 @@ export default function HomePage() {
             <Star size={28} />
           </div>
           <h2 className="mb-3 text-lg font-bold lowercase text-neutral-900">
-            ¿qué es el reto?
+            qué es el curso de ADN DE MARCA?
           </h2>
           <p className="text-sm font-normal text-neutral-700 leading-relaxed">
-            ADN de Marca es un curso de 5 semanas en el que construyes tu marca
-            personal o de negocio a través de journaling diario, un entregable
-            semanal en la comunidad de Hotmart, y retos extra opcionales con
-            evidencia fotográfica.
-          </p>
-          <p className="mt-3 text-sm font-normal text-neutral-700">
-            Las 3 personas con más puntos al final de las 5 semanas ganan premios.
+            éste es un curso 100% enfocado en ADN DE MARCA, donde aprenderás a
+            identificar el diferencial de tu marca y construir una identidad
+            atractiva a partir de tu autenticidad, para convertirte en la
+            superestrella de tu nicho
           </p>
         </div>
       </footer>

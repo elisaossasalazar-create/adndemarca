@@ -12,7 +12,6 @@ import { getChallengesForWeek } from "@/lib/challenges";
 import {
   getTodayUTCString,
   getCurrentWeek,
-  getMotivationalPhrase,
   getCourseStartString,
 } from "@/lib/course";
 import { Star, PinkStar } from "@/components/star";
@@ -42,8 +41,6 @@ export default async function DashboardPage() {
     extraCompletions.map((c) => [c.challenge_id, c.evidence_filename])
   );
   const weekChallenges = getChallengesForWeek(week);
-  const phrase = getMotivationalPhrase();
-
   const journalDates = getJournalDatesForUser(user.id);
   const courseStartStr = getCourseStartString();
 
@@ -99,7 +96,7 @@ export default async function DashboardPage() {
               The Brand Camp · 7ma Edición
             </p>
             <p className="mt-0.5 text-xl font-bold lowercase leading-tight">
-              {user.full_name}
+              hola estrellita, {user.full_name}
             </p>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -115,7 +112,14 @@ export default async function DashboardPage() {
             <LogoutButton />
           </div>
         </div>
-        <p className="mt-3 text-xs font-normal text-neutral-400 italic">{phrase}</p>
+        <div className="mt-3 text-xs font-normal text-neutral-500 leading-relaxed">
+          <span className="font-medium text-neutral-700">Recuerda que:</span>
+          <ul className="mt-1 list-none space-y-0.5 pl-0">
+            <li className="flex items-start gap-1.5"><Star size={10} className="mt-0.5 flex-shrink-0" />la acción trae claridad</li>
+            <li className="flex items-start gap-1.5"><Star size={10} className="mt-0.5 flex-shrink-0" />no tengo que estar listo, tengo que estar dispuesto</li>
+            <li className="flex items-start gap-1.5"><Star size={10} className="mt-0.5 flex-shrink-0" />Dios no se equivoca con las ideas, dones o talentos que me dió</li>
+          </ul>
+        </div>
       </header>
 
       <TabsLayout

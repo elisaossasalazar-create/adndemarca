@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { CONTRACT_TEMPLATE } from "@/lib/contract-template";
+import { CONTRACT_TEMPLATE, CONTRACT_STATEMENT } from "@/lib/contract-template";
 import { PinkStar } from "@/components/star";
 
 interface FormData {
@@ -137,29 +137,31 @@ export default function RegistroPage() {
               <div>
                 <h1 className="text-3xl font-bold lowercase">tu contrato contigo</h1>
                 <p className="mt-2 text-sm font-normal text-neutral-500">
-                  Completa cada frase. Este es tu compromiso para las próximas 5 semanas.
+                  Lee y firma con tu nombre.
                 </p>
               </div>
 
-              {CONTRACT_TEMPLATE.map((blank) => (
-                <div key={blank.id}>
-                  <p className="text-sm leading-relaxed text-neutral-800">
-                    {blank.before}
-                    <input
-                      type="text"
-                      required
-                      value={contract[blank.id] ?? ""}
-                      placeholder={blank.placeholder}
-                      onChange={(e) =>
-                        setContract((c) => ({ ...c, [blank.id]: e.target.value }))
-                      }
-                      className="mx-1 inline-block w-56 max-w-full border-b-2 bg-transparent px-1 py-0.5 align-baseline text-sm outline-none transition-colors"
-                      style={{ borderColor: "var(--brand-pink)" }}
-                    />
-                    {blank.after}
-                  </p>
-                </div>
-              ))}
+              <div
+                className="rounded-2xl px-5 py-4 text-sm font-medium leading-relaxed text-neutral-800 italic"
+                style={{ backgroundColor: "var(--brand-yellow)" }}
+              >
+                "{CONTRACT_STATEMENT}"
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">
+                  Tu nombre (firma)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={contract["firma"] ?? ""}
+                  placeholder="escribe tu nombre para firmar"
+                  onChange={(e) =>
+                    setContract((c) => ({ ...c, firma: e.target.value }))
+                  }
+                  className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-base outline-none focus:border-[#FF63A6] transition-colors"
+                />
 
               {error && <p className="text-sm text-red-500">{error}</p>}
 
