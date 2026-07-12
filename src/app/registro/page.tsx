@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { CONTRACT_TEMPLATE, CONTRACT_STATEMENT } from "@/lib/contract-template";
 import { PinkStar } from "@/components/star";
@@ -24,7 +23,6 @@ const emptyForm: FormData = {
 };
 
 export default function RegistroPage() {
-  const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<FormData>(emptyForm);
   const [contract, setContract] = useState<Record<string, string>>({});
@@ -69,11 +67,11 @@ export default function RegistroPage() {
       });
 
       if (signInResult?.error) {
-        router.push("/login");
+        window.location.href = "/login";
         return;
       }
 
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch {
       setError("Ocurrió un error inesperado. Intenta de nuevo.");
       setSubmitting(false);
