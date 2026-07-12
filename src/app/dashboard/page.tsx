@@ -27,6 +27,8 @@ import CommunityTab from "./community-tab";
 import ResourcesTab from "./resources-tab";
 import TabsLayout from "./tabs-layout";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
