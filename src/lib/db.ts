@@ -58,6 +58,15 @@ function getDb(): DatabaseSync {
         value TEXT NOT NULL
       );
 
+      CREATE TABLE IF NOT EXISTS resources (
+        id TEXT PRIMARY KEY,
+        category TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL DEFAULT '',
+        url TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
       CREATE TABLE IF NOT EXISTS community_posts (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL REFERENCES users(id),
@@ -290,6 +299,45 @@ export function deleteUser(userId: string): void {
     db.exec("ROLLBACK");
     throw e;
   }
+}
+
+// ── Resources ────────────────────────────────────────────────────────────────
+
+export type ResourceCategory = "libro" | "video" | "podcast" | "substack";
+
+export interface Resource {
+  id: string;
+  category: ResourceCategory;
+  title: string;
+  description: string;
+  url: string;
+  created_at: string;
+}
+
+export function getResources(): Resource[] {
+  const db = getDb();
+  return db
+    .prepare("SELECT * FROM resources ORDER BY created_at DESC")
+    .all() as unknown as Resource[];
+}
+
+export function createResource(
+  category: ResourceCategory,
+  title: string,
+  description: string,
+  url: string,
+): Resource {
+  const db = getDb();
+  const id = randomUUID();
+  db.prepare(
+    "INSERT INTO resources (id, category, title, description, url) VALUES (?, ?, ?, ?, ?)"
+  ).run(id, category, title, description, url);
+  return db.prepare("SELECT * FROM resources WHERE id = ?").get(id) as unknown as Resource;
+}
+
+export function deleteResource(id: string): void {
+  const db = getDb();
+  db.prepare("DELETE FROM resources WHERE id = ?").run(id);
 }
 
 // ── Community ─────────────────────────────────────────────────────────────────

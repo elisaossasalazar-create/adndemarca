@@ -8,6 +8,7 @@ import {
   getExtraCompletionsForUser,
   getJournalDatesForUser,
   getCommunityPosts,
+  getResources,
 } from "@/lib/db";
 import { getChallengesForWeek } from "@/lib/challenges";
 import {
@@ -23,6 +24,7 @@ import ExtraChallengeCard from "./extra-challenge-card";
 import CalendarTab from "./calendar-tab";
 import RankingTab from "./ranking-tab";
 import CommunityTab from "./community-tab";
+import ResourcesTab from "./resources-tab";
 import TabsLayout from "./tabs-layout";
 
 export default async function DashboardPage() {
@@ -48,6 +50,7 @@ export default async function DashboardPage() {
 
   const allUsers = getAllUsers();
   const communityPosts = getCommunityPosts();
+  const resourcesList = getResources();
 
   const inicioContent = (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
@@ -92,6 +95,13 @@ export default async function DashboardPage() {
 
   const adminEmail = process.env.ADMIN_EMAIL;
   const isAdmin = !!adminEmail && user.email === adminEmail;
+
+  const recursosContent = (
+    <ResourcesTab
+      initialResources={resourcesList}
+      isAdmin={isAdmin}
+    />
+  );
 
   const comunidadContent = (
     <CommunityTab
@@ -143,6 +153,7 @@ export default async function DashboardPage() {
         calendario={calendarioContent}
         ranking={rankingContent}
         comunidad={comunidadContent}
+        recursos={recursosContent}
       />
     </div>
     </div>
