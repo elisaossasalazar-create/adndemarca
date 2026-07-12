@@ -10,8 +10,8 @@ export default async function AdminPage() {
   const session = await auth();
   if (!session?.user?.email) redirect("/login");
 
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (!adminEmail || session.user.email !== adminEmail) redirect("/dashboard");
+  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+  if (!adminEmail || session.user.email?.toLowerCase() !== adminEmail) redirect("/dashboard");
 
   const users = getAllUsersWithStats();
 

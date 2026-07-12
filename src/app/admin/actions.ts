@@ -7,8 +7,8 @@ import { setSetting, adjustUserPointsDelta, deleteUser } from "@/lib/db";
 
 async function requireAdmin(): Promise<void> {
   const session = await auth();
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (!session?.user?.email || !adminEmail || session.user.email !== adminEmail) {
+  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+  if (!session?.user?.email || !adminEmail || session.user.email?.toLowerCase() !== adminEmail) {
     redirect("/dashboard");
   }
 }

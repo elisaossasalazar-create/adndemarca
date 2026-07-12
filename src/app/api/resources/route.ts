@@ -10,8 +10,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (!adminEmail || session.user.email !== adminEmail) {
+  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+  if (!adminEmail || session.user.email?.toLowerCase() !== adminEmail) {
     return NextResponse.json({ error: "Solo el admin puede publicar recursos." }, { status: 403 });
   }
 

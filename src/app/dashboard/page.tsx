@@ -95,8 +95,8 @@ export default async function DashboardPage() {
     />
   );
 
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const isAdmin = !!adminEmail && user.email === adminEmail;
+  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+  const isAdmin = !!adminEmail && user.email.toLowerCase() === adminEmail;
 
   const recursosContent = (
     <ResourcesTab
