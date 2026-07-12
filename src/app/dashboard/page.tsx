@@ -88,7 +88,8 @@ export default async function DashboardPage() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-neutral-900">
+    <div className="min-h-screen bg-neutral-50 flex justify-center sm:py-6 sm:px-4">
+    <div className="w-full sm:max-w-xl flex flex-col bg-white text-neutral-900 sm:rounded-3xl sm:shadow-sm sm:border sm:border-neutral-100 overflow-hidden">
       <header className="px-6 py-4 border-b border-neutral-100">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -127,6 +128,7 @@ export default async function DashboardPage() {
         calendario={calendarioContent}
         ranking={rankingContent}
       />
+    </div>
     </div>
   );
 }

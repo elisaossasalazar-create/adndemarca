@@ -25,13 +25,13 @@ export default function TabsLayout({ inicio, calendario, ranking }: Props) {
   return (
     <div className="flex flex-1 flex-col">
       {/* Tab bar */}
-      <div className="border-b border-neutral-100 px-6">
-        <div className="flex gap-6">
+      <div className="border-b border-neutral-100 overflow-x-auto">
+        <div className="flex gap-5 px-6 min-w-max">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className={`py-3 text-sm font-medium transition-colors ${
+              className={`py-3 text-sm font-medium transition-colors whitespace-nowrap ${
                 active === tab.id
                   ? "border-b-2 text-neutral-900"
                   : "text-neutral-400 hover:text-neutral-600"

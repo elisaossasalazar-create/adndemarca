@@ -79,7 +79,8 @@ export default function RegistroPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-neutral-900">
+    <div className="min-h-screen bg-neutral-50 flex justify-center sm:py-6 sm:px-4">
+    <div className="w-full sm:max-w-md flex flex-col bg-white text-neutral-900 sm:rounded-3xl sm:shadow-sm sm:border sm:border-neutral-100 overflow-hidden">
       <header className="px-6 py-5 flex items-center justify-between border-b border-neutral-100">
         <Link href="/" className="text-xs tracking-[0.2em] uppercase text-neutral-400 font-medium">
           The Brand Camp · ADN de Marca
@@ -192,6 +193,7 @@ export default function RegistroPage() {
           </p>
         </div>
       </main>
+    </div>
     </div>
   );
 }
