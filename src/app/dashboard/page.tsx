@@ -51,8 +51,10 @@ export default async function DashboardPage() {
   const courseStartStr = getCourseStartString();
 
   const allUsers = getAllUsers();
-  const communityPosts = getCommunityPosts();
-  const resourcesList = getResources();
+  let communityPosts: ReturnType<typeof getCommunityPosts> = [];
+  let resourcesList: ReturnType<typeof getResources> = [];
+  try { communityPosts = getCommunityPosts(); } catch { /* table may not exist yet */ }
+  try { resourcesList = getResources(); } catch { /* table may not exist yet */ }
 
   const inicioContent = (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4">

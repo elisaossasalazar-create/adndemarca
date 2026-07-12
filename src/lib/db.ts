@@ -12,82 +12,79 @@ declare global {
   var __db: DatabaseSync | undefined;
 }
 
+const SCHEMA_STATEMENTS = [
+  `CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    phone TEXT NOT NULL,
+    social_handle TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    contract_json TEXT NOT NULL,
+    points_total INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS journal_completions (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    completed_date TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(user_id, completed_date)
+  )`,
+  `CREATE TABLE IF NOT EXISTS weekly_completions (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    week_number INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(user_id, week_number)
+  )`,
+  `CREATE TABLE IF NOT EXISTS extra_completions (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    challenge_id TEXT NOT NULL,
+    evidence_filename TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(user_id, challenge_id)
+  )`,
+  `CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS resources (
+    id TEXT PRIMARY KEY,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    url TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS community_posts (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    user_name TEXT NOT NULL,
+    week_number INTEGER NOT NULL,
+    content TEXT NOT NULL DEFAULT '',
+    file_name TEXT,
+    file_type TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS community_comments (
+    id TEXT PRIMARY KEY,
+    post_id TEXT NOT NULL REFERENCES community_posts(id),
+    user_id TEXT NOT NULL REFERENCES users(id),
+    user_name TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+];
+
 function getDb(): DatabaseSync {
   if (!global.__db) {
     const db = new DatabaseSync(DB_PATH);
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        full_name TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        phone TEXT NOT NULL,
-        social_handle TEXT NOT NULL,
-        password_hash TEXT NOT NULL,
-        contract_json TEXT NOT NULL,
-        points_total INTEGER NOT NULL DEFAULT 0,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-      );
-
-      CREATE TABLE IF NOT EXISTS journal_completions (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL REFERENCES users(id),
-        completed_date TEXT NOT NULL,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        UNIQUE(user_id, completed_date)
-      );
-
-      CREATE TABLE IF NOT EXISTS weekly_completions (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL REFERENCES users(id),
-        week_number INTEGER NOT NULL,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        UNIQUE(user_id, week_number)
-      );
-
-      CREATE TABLE IF NOT EXISTS extra_completions (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL REFERENCES users(id),
-        challenge_id TEXT NOT NULL,
-        evidence_filename TEXT NOT NULL,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        UNIQUE(user_id, challenge_id)
-      );
-
-      CREATE TABLE IF NOT EXISTS settings (
-        key TEXT PRIMARY KEY,
-        value TEXT NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS resources (
-        id TEXT PRIMARY KEY,
-        category TEXT NOT NULL,
-        title TEXT NOT NULL,
-        description TEXT NOT NULL DEFAULT '',
-        url TEXT NOT NULL,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-      );
-
-      CREATE TABLE IF NOT EXISTS community_posts (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL REFERENCES users(id),
-        user_name TEXT NOT NULL,
-        week_number INTEGER NOT NULL,
-        content TEXT NOT NULL DEFAULT '',
-        file_name TEXT,
-        file_type TEXT,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-      );
-
-      CREATE TABLE IF NOT EXISTS community_comments (
-        id TEXT PRIMARY KEY,
-        post_id TEXT NOT NULL REFERENCES community_posts(id),
-        user_id TEXT NOT NULL REFERENCES users(id),
-        user_name TEXT NOT NULL,
-        content TEXT NOT NULL,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-      );
-    `);
     global.__db = db;
+    for (const sql of SCHEMA_STATEMENTS) {
+      db.exec(sql);
+    }
   }
   return global.__db;
 }
