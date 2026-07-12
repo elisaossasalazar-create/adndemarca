@@ -34,7 +34,10 @@ import TabsLayout from "./tabs-layout";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const session = await auth();
+  const session = await auth().catch((e: unknown) => {
+    console.error("[Dashboard] auth() failed:", e);
+    redirect("/login");
+  });
   if (!session?.user?.id) redirect("/login");
 
   // ── Get user (first DB call / initialises the singleton) ──────────────────
