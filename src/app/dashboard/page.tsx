@@ -90,11 +90,15 @@ export default async function DashboardPage() {
     />
   );
 
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const isAdmin = !!adminEmail && user.email === adminEmail;
+
   const comunidadContent = (
     <CommunityTab
       initialPosts={communityPosts}
       currentUserId={user.id}
       currentWeek={week}
+      isAdmin={isAdmin}
     />
   );
 

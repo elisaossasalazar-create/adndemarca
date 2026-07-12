@@ -28,9 +28,10 @@ interface Props {
   initialPosts: CommunityPost[];
   currentUserId: string;
   currentWeek: number;
+  isAdmin: boolean;
 }
 
-export default function CommunityTab({ initialPosts, currentUserId, currentWeek }: Props) {
+export default function CommunityTab({ initialPosts, currentUserId, currentWeek, isAdmin }: Props) {
   const [posts, setPosts] = useState<CommunityPost[]>(initialPosts);
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -95,6 +96,10 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek 
         p.id === postId ? { ...p, comments: [...p.comments, comment] } : p
       )
     );
+  }
+
+  function handlePostDeleted(postId: string) {
+    setPosts((ps) => ps.filter((p) => p.id !== postId));
   }
 
   return (
@@ -189,7 +194,9 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek 
               key={post.id}
               post={post}
               isMe={post.user_id === currentUserId}
+              isAdmin={isAdmin}
               onCommentAdded={(comment) => handleCommentAdded(post.id, comment)}
+              onDeleted={() => handlePostDeleted(post.id)}
             />
           ))}
         </div>
@@ -201,16 +208,34 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek 
 function PostCard({
   post,
   isMe,
+  isAdmin,
   onCommentAdded,
+  onDeleted,
 }: {
   post: CommunityPost;
   isMe: boolean;
+  isAdmin: boolean;
   onCommentAdded: (comment: CommunityComment) => void;
+  onDeleted: () => void;
 }) {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function handleDelete() {
+    if (!confirm("¿Eliminar esta publicación y sus comentarios?")) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/community/${post.id}`, { method: "DELETE" });
+      if (res.ok) onDeleted();
+    } catch {
+      // silently ignore — post stays visible
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   async function handleComment(e: React.FormEvent) {
     e.preventDefault();
@@ -257,14 +282,26 @@ function PostCard({
             semana {post.week_number} · {formatDate(post.created_at)}
           </p>
         </div>
-        {isMe && (
-          <span
-            className="text-[10px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 flex-shrink-0"
-            style={{ backgroundColor: "var(--brand-pink)", color: "white" }}
-          >
-            tú
-          </span>
-        )}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {isMe && (
+            <span
+              className="text-[10px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5"
+              style={{ backgroundColor: "var(--brand-pink)", color: "white" }}
+            >
+              tú
+            </span>
+          )}
+          {isAdmin && (
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              title="Eliminar publicación"
+              className="text-[10px] text-neutral-400 hover:text-red-500 transition-colors disabled:opacity-40 px-1"
+            >
+              {deleting ? "…" : "✕ eliminar"}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Text */}

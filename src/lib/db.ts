@@ -351,6 +351,19 @@ export function createCommunityPost(
   return db.prepare("SELECT * FROM community_posts WHERE id = ?").get(id) as unknown as CommunityPost;
 }
 
+export function deleteCommunityPost(postId: string): void {
+  const db = getDb();
+  db.exec("BEGIN");
+  try {
+    db.prepare("DELETE FROM community_comments WHERE post_id = ?").run(postId);
+    db.prepare("DELETE FROM community_posts WHERE id = ?").run(postId);
+    db.exec("COMMIT");
+  } catch (e) {
+    db.exec("ROLLBACK");
+    throw e;
+  }
+}
+
 export function createCommunityComment(
   postId: string,
   userId: string,
