@@ -9,6 +9,10 @@ import {
   getJournalDatesForUser,
   getCommunityPosts,
   getResources,
+  type User,
+  type ExtraCompletion,
+  type CommunityPostWithComments,
+  type Resource,
 } from "@/lib/db";
 import { getChallengesForWeek } from "@/lib/challenges";
 import {
@@ -33,28 +37,92 @@ export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const user = getUserById(session.user.id);
+  // ── Get user (first DB call / initialises the singleton) ──────────────────
+  let user: User | undefined;
+  let dbInitError: string | null = null;
+  try {
+    user = getUserById(session.user.id);
+  } catch (e) {
+    dbInitError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+    console.error("[Dashboard] getUserById failed:", e);
+  }
+
+  if (dbInitError) {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 p-8 max-w-lg w-full">
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-3">
+            The Brand Camp · ADN de Marca
+          </p>
+          <h1 className="text-lg font-bold lowercase text-neutral-900 mb-3">
+            error al cargar el dashboard
+          </h1>
+          <pre className="text-xs font-mono bg-neutral-50 rounded-xl px-4 py-3 text-red-600 whitespace-pre-wrap break-all mb-4">
+            {dbInitError}
+          </pre>
+          <p className="text-xs text-neutral-500">
+            Captura este mensaje y compártelo para que podamos resolverlo.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (!user) redirect("/login");
 
+  // ── Load remaining dashboard data ─────────────────────────────────────────
   const today = getTodayUTCString();
   const week = getCurrentWeek();
 
-  const journalDone = hasJournalForDate(user.id, today);
-  const weeklyDone = hasWeeklyCompletion(user.id, week);
-  const extraCompletions = getExtraCompletionsForUser(user.id);
+  let journalDone = false;
+  let weeklyDone = false;
+  let extraCompletions: ExtraCompletion[] = [];
+  let journalDates: string[] = [];
+  let allUsers: User[] = [];
+  let communityPosts: CommunityPostWithComments[] = [];
+  let resourcesList: Resource[] = [];
+  let dataError: string | null = null;
+
+  try {
+    journalDone = hasJournalForDate(user.id, today);
+    weeklyDone = hasWeeklyCompletion(user.id, week);
+    extraCompletions = getExtraCompletionsForUser(user.id);
+    journalDates = getJournalDatesForUser(user.id);
+    allUsers = getAllUsers();
+    communityPosts = getCommunityPosts();
+    resourcesList = getResources();
+  } catch (e) {
+    dataError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+    console.error("[Dashboard] data loading failed:", e);
+  }
+
+  if (dataError) {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 p-8 max-w-lg w-full">
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-3">
+            The Brand Camp · ADN de Marca
+          </p>
+          <h1 className="text-lg font-bold lowercase text-neutral-900 mb-3">
+            error al cargar los datos
+          </h1>
+          <pre className="text-xs font-mono bg-neutral-50 rounded-xl px-4 py-3 text-red-600 whitespace-pre-wrap break-all mb-4">
+            {dataError}
+          </pre>
+          <p className="text-xs text-neutral-500">
+            Captura este mensaje y compártelo para que podamos resolverlo.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const completedIds = new Set(extraCompletions.map((c) => c.challenge_id));
   const evidenceMap = Object.fromEntries(
     extraCompletions.map((c) => [c.challenge_id, c.evidence_filename])
   );
   const weekChallenges = getChallengesForWeek(week);
-  const journalDates = getJournalDatesForUser(user.id);
   const courseStartStr = getCourseStartString();
-
-  const allUsers = getAllUsers();
-  let communityPosts: ReturnType<typeof getCommunityPosts> = [];
-  let resourcesList: ReturnType<typeof getResources> = [];
-  try { communityPosts = getCommunityPosts(); } catch { /* table may not exist yet */ }
-  try { resourcesList = getResources(); } catch { /* table may not exist yet */ }
 
   const inicioContent = (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
