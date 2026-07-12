@@ -7,6 +7,7 @@ import {
   hasWeeklyCompletion,
   getExtraCompletionsForUser,
   getJournalDatesForUser,
+  getCommunityPosts,
 } from "@/lib/db";
 import { getChallengesForWeek } from "@/lib/challenges";
 import {
@@ -21,6 +22,7 @@ import WeeklyCard from "./weekly-card";
 import ExtraChallengeCard from "./extra-challenge-card";
 import CalendarTab from "./calendar-tab";
 import RankingTab from "./ranking-tab";
+import CommunityTab from "./community-tab";
 import TabsLayout from "./tabs-layout";
 
 export default async function DashboardPage() {
@@ -45,6 +47,7 @@ export default async function DashboardPage() {
   const courseStartStr = getCourseStartString();
 
   const allUsers = getAllUsers();
+  const communityPosts = getCommunityPosts();
 
   const inicioContent = (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
@@ -84,6 +87,14 @@ export default async function DashboardPage() {
         points_total: u.points_total,
       }))}
       currentUserId={user.id}
+    />
+  );
+
+  const comunidadContent = (
+    <CommunityTab
+      initialPosts={communityPosts}
+      currentUserId={user.id}
+      currentWeek={week}
     />
   );
 
@@ -127,6 +138,7 @@ export default async function DashboardPage() {
         inicio={inicioContent}
         calendario={calendarioContent}
         ranking={rankingContent}
+        comunidad={comunidadContent}
       />
     </div>
     </div>

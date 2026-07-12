@@ -57,6 +57,26 @@ function getDb(): DatabaseSync {
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS community_posts (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL REFERENCES users(id),
+        user_name TEXT NOT NULL,
+        week_number INTEGER NOT NULL,
+        content TEXT NOT NULL DEFAULT '',
+        file_name TEXT,
+        file_type TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS community_comments (
+        id TEXT PRIMARY KEY,
+        post_id TEXT NOT NULL REFERENCES community_posts(id),
+        user_id TEXT NOT NULL REFERENCES users(id),
+        user_name TEXT NOT NULL,
+        content TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
     `);
     global.__db = db;
   }
@@ -259,6 +279,8 @@ export function deleteUser(userId: string): void {
   const db = getDb();
   db.exec("BEGIN");
   try {
+    db.prepare("DELETE FROM community_comments WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM community_posts WHERE user_id = ?").run(userId);
     db.prepare("DELETE FROM extra_completions WHERE user_id = ?").run(userId);
     db.prepare("DELETE FROM weekly_completions WHERE user_id = ?").run(userId);
     db.prepare("DELETE FROM journal_completions WHERE user_id = ?").run(userId);
@@ -268,4 +290,78 @@ export function deleteUser(userId: string): void {
     db.exec("ROLLBACK");
     throw e;
   }
+}
+
+// ── Community ─────────────────────────────────────────────────────────────────
+
+export interface CommunityPost {
+  id: string;
+  user_id: string;
+  user_name: string;
+  week_number: number;
+  content: string;
+  file_name: string | null;
+  file_type: string | null;
+  created_at: string;
+}
+
+export interface CommunityComment {
+  id: string;
+  post_id: string;
+  user_id: string;
+  user_name: string;
+  content: string;
+  created_at: string;
+}
+
+export interface CommunityPostWithComments extends CommunityPost {
+  comments: CommunityComment[];
+}
+
+export function getCommunityPosts(): CommunityPostWithComments[] {
+  const db = getDb();
+  const posts = db
+    .prepare("SELECT * FROM community_posts ORDER BY created_at DESC LIMIT 100")
+    .all() as unknown as CommunityPost[];
+  const comments = db
+    .prepare("SELECT * FROM community_comments ORDER BY created_at ASC")
+    .all() as unknown as CommunityComment[];
+
+  const byPost: Record<string, CommunityComment[]> = {};
+  for (const c of comments) {
+    (byPost[c.post_id] ??= []).push(c);
+  }
+  return posts.map((p) => ({ ...p, comments: byPost[p.id] ?? [] }));
+}
+
+export function createCommunityPost(
+  userId: string,
+  userName: string,
+  weekNumber: number,
+  content: string,
+  fileName: string | null,
+  fileType: string | null,
+): CommunityPost {
+  const db = getDb();
+  const id = randomUUID();
+  db.prepare(
+    `INSERT INTO community_posts (id, user_id, user_name, week_number, content, file_name, file_type)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
+  ).run(id, userId, userName, weekNumber, content, fileName, fileType);
+  return db.prepare("SELECT * FROM community_posts WHERE id = ?").get(id) as unknown as CommunityPost;
+}
+
+export function createCommunityComment(
+  postId: string,
+  userId: string,
+  userName: string,
+  content: string,
+): CommunityComment {
+  const db = getDb();
+  const id = randomUUID();
+  db.prepare(
+    `INSERT INTO community_comments (id, post_id, user_id, user_name, content)
+     VALUES (?, ?, ?, ?, ?)`
+  ).run(id, postId, userId, userName, content);
+  return db.prepare("SELECT * FROM community_comments WHERE id = ?").get(id) as unknown as CommunityComment;
 }
