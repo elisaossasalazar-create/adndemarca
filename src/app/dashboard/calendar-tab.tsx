@@ -54,7 +54,7 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
   ).length;
 
   return (
-    <div className="mx-auto w-full max-w-sm">
+    <div className="mx-auto w-full max-w-md">
       {/* Month navigation */}
       <div className="mb-4 flex items-center justify-between">
         <button
@@ -87,7 +87,7 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
       {/* Day headers */}
       <div className="mb-1 grid grid-cols-7 text-center">
         {DAY_LABELS.map((label) => (
-          <div key={label} className="py-1 text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+          <div key={label} className="py-1 text-[10px] sm:text-xs font-medium uppercase tracking-wide text-neutral-400">
             {label}
           </div>
         ))}
@@ -97,7 +97,7 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
       <div className="grid grid-cols-7 gap-y-1 text-center">
         {cells.map((cell, i) => {
           if (!cell.day || !cell.dateStr) {
-            return <div key={`empty-${i}`} className="h-9" />;
+            return <div key={`empty-${i}`} className="h-9 sm:h-12" />;
           }
 
           const dateStr = cell.dateStr;
@@ -107,9 +107,9 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
           const isAfterToday = dateStr > todayStr;
 
           return (
-            <div key={dateStr} className="flex h-9 flex-col items-center justify-center">
+            <div key={dateStr} className="flex h-9 sm:h-12 flex-col items-center justify-center">
               <div
-                className={`relative flex h-8 w-8 flex-col items-center justify-center rounded-full text-xs transition-all
+                className={`relative flex h-8 w-8 sm:h-10 sm:w-10 flex-col items-center justify-center rounded-full text-xs transition-all
                   ${isBeforeStart || isAfterToday ? "text-neutral-300" : "text-neutral-700"}
                 `}
                 style={{
@@ -118,9 +118,9 @@ export default function CalendarTab({ completedDates, courseStartDate }: Props) 
                 }}
               >
                 {isCompleted ? (
-                  <PinkStar size={18} />
+                  <PinkStar size={20} />
                 ) : (
-                  <span className="text-xs leading-none font-medium">
+                  <span className="text-xs sm:text-sm leading-none font-medium">
                     {cell.day}
                   </span>
                 )}

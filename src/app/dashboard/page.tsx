@@ -89,7 +89,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-neutral-50 flex justify-center sm:py-6 sm:px-4">
-    <div className="w-full sm:max-w-xl flex flex-col bg-white text-neutral-900 sm:rounded-3xl sm:shadow-sm sm:border sm:border-neutral-100 overflow-hidden">
+    <div className="w-full sm:max-w-2xl flex flex-col bg-white text-neutral-900 sm:rounded-3xl sm:shadow-sm sm:border sm:border-neutral-100 overflow-hidden">
       <header className="px-6 py-4 border-b border-neutral-100">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -113,12 +113,12 @@ export default async function DashboardPage() {
             <LogoutButton />
           </div>
         </div>
-        <div className="mt-3 text-xs font-normal text-neutral-500 leading-relaxed">
+        <div className="mt-3 text-xs sm:text-sm font-normal text-neutral-500 leading-relaxed">
           <span className="font-medium text-neutral-700">Recuerda que:</span>
-          <ul className="mt-1 list-none space-y-0.5 pl-0">
-            <li className="flex items-start gap-1.5"><Star size={10} className="mt-0.5 flex-shrink-0" />la acción trae claridad</li>
-            <li className="flex items-start gap-1.5"><Star size={10} className="mt-0.5 flex-shrink-0" />no tengo que estar listo, tengo que estar dispuesto</li>
-            <li className="flex items-start gap-1.5"><Star size={10} className="mt-0.5 flex-shrink-0" />Dios no se equivoca con las ideas, dones o talentos que me dió</li>
+          <ul className="mt-1 list-none space-y-1 pl-0">
+            <li className="flex items-start gap-1.5"><Star size={11} className="mt-0.5 flex-shrink-0" />la acción trae claridad</li>
+            <li className="flex items-start gap-1.5"><Star size={11} className="mt-0.5 flex-shrink-0" />no tengo que estar listo, tengo que estar dispuesto</li>
+            <li className="flex items-start gap-1.5"><Star size={11} className="mt-0.5 flex-shrink-0" />Dios no se equivoca con las ideas, dones o talentos que me dió</li>
           </ul>
         </div>
       </header>
