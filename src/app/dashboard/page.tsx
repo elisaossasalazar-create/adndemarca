@@ -33,7 +33,48 @@ import TabsLayout from "./tabs-layout";
 
 export const dynamic = "force-dynamic";
 
+function isNextSpecial(e: unknown): boolean {
+  if (e == null || typeof e !== "object") return false;
+  const d = (e as { digest?: unknown }).digest;
+  return (
+    typeof d === "string" &&
+    (d.startsWith("NEXT_REDIRECT") || d.startsWith("NEXT_NOT_FOUND"))
+  );
+}
+
 export default async function DashboardPage() {
+  console.log("[Dashboard] render start");
+  try {
+    return await _dashboard();
+  } catch (e: unknown) {
+    if (isNextSpecial(e)) throw e;
+    const msg =
+      e instanceof Error
+        ? `${e.name}: ${e.message}\n\n${e.stack ?? ""}`
+        : String(e);
+    console.error("[Dashboard] UNCAUGHT:", e);
+    return (
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 p-8 max-w-lg w-full">
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-3">
+            The Brand Camp · ADN de Marca
+          </p>
+          <h1 className="text-lg font-bold lowercase text-neutral-900 mb-3">
+            error (diagnóstico)
+          </h1>
+          <pre className="text-xs font-mono bg-neutral-50 rounded-xl px-4 py-3 text-red-600 whitespace-pre-wrap break-all mb-4">
+            {msg}
+          </pre>
+          <p className="text-xs text-neutral-500">
+            Captura este mensaje y compártelo para que podamos resolverlo.
+          </p>
+        </div>
+      </div>
+    );
+  }
+}
+
+async function _dashboard() {
   const session = await auth().catch((e: unknown) => {
     console.error("[Dashboard] auth() failed:", e);
     redirect("/login");

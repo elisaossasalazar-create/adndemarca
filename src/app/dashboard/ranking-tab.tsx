@@ -1,3 +1,5 @@
+"use client";
+
 import { Star, PinkStar } from "@/components/star";
 
 interface RankUser {
