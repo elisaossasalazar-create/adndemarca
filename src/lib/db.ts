@@ -4,7 +4,9 @@ import path from "node:path";
 import fs from "node:fs";
 
 const DATA_DIR = path.join(process.cwd(), "data");
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+} catch { /* Railway volume may not be mounted yet; DB open will surface the real error */ }
 
 const DB_PATH = path.join(DATA_DIR, "app.db");
 
@@ -82,6 +84,8 @@ function getDb(): DatabaseSync {
   if (!global.__db) {
     const db = new DatabaseSync(DB_PATH);
     global.__db = db;
+    db.exec("PRAGMA journal_mode = WAL");
+    db.exec("PRAGMA busy_timeout = 5000");
     for (const sql of SCHEMA_STATEMENTS) {
       db.exec(sql);
     }
