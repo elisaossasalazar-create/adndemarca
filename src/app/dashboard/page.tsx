@@ -33,6 +33,8 @@ import TabsLayout from "./tabs-layout";
 
 export const dynamic = "force-dynamic";
 
+console.log("[Dashboard] module loaded ✓");
+
 function isNextSpecial(e: unknown): boolean {
   if (e == null || typeof e !== "object") return false;
   const d = (e as { digest?: unknown }).digest;
