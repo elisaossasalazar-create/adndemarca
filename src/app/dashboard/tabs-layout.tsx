@@ -9,7 +9,7 @@ const TABS = [
   { id: "ranking", label: "Ranking" },
   { id: "comunidad", label: "Comunidad" },
   { id: "recursos", label: "Recursos" },
-  { id: "brandstein", label: "Brand-Stein ✦" },
+  { id: "brandstein", label: "Brand-Stein" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
