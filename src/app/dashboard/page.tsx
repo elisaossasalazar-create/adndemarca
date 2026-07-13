@@ -27,6 +27,7 @@ import CalendarTab from "./calendar-tab";
 import RankingTab from "./ranking-tab";
 import CommunityTab from "./community-tab";
 import ResourcesTab from "./resources-tab";
+import BrandSteinTab from "./brandstein-tab";
 import TabsLayout from "./tabs-layout";
 
 export const dynamic = "force-dynamic";
@@ -267,6 +268,7 @@ async function _dashboard() {
         ranking={rankingContent}
         comunidad={comunidadContent}
         recursos={recursosContent}
+        brandstein={<BrandSteinTab />}
       />
     </div>
     </div>

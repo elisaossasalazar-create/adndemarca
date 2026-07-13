@@ -78,6 +78,12 @@ const SCHEMA_STATEMENTS = [
     content TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
+  `CREATE TABLE IF NOT EXISTS brandstein_conversations (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL UNIQUE REFERENCES users(id),
+    messages_json TEXT NOT NULL DEFAULT '[]',
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
 ];
 
 function getDb(): DatabaseSync {
@@ -413,6 +419,39 @@ export function deleteCommunityPost(postId: string): void {
     db.exec("ROLLBACK");
     throw e;
   }
+}
+
+// ── Brand-Stein conversations ─────────────────────────────────────────────────
+
+export interface BrandSteinMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export function getBrandSteinConversation(userId: string): BrandSteinMessage[] {
+  const db = getDb();
+  const row = db.prepare("SELECT messages_json FROM brandstein_conversations WHERE user_id = ?").get(userId) as { messages_json: string } | undefined;
+  if (!row) return [];
+  try {
+    return JSON.parse(row.messages_json) as BrandSteinMessage[];
+  } catch {
+    return [];
+  }
+}
+
+export function saveBrandSteinConversation(userId: string, messages: BrandSteinMessage[]): void {
+  const db = getDb();
+  const messagesJson = JSON.stringify(messages);
+  db.prepare(
+    `INSERT INTO brandstein_conversations (id, user_id, messages_json, updated_at)
+     VALUES (?, ?, ?, datetime('now'))
+     ON CONFLICT(user_id) DO UPDATE SET messages_json = excluded.messages_json, updated_at = datetime('now')`
+  ).run(randomUUID(), userId, messagesJson);
+}
+
+export function clearBrandSteinConversation(userId: string): void {
+  const db = getDb();
+  db.prepare("DELETE FROM brandstein_conversations WHERE user_id = ?").run(userId);
 }
 
 export function createCommunityComment(

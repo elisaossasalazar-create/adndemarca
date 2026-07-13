@@ -9,6 +9,7 @@ const TABS = [
   { id: "ranking", label: "Ranking" },
   { id: "comunidad", label: "Comunidad" },
   { id: "recursos", label: "Recursos" },
+  { id: "brandstein", label: "Brand-Stein ✦" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -19,12 +20,13 @@ interface Props {
   ranking: ReactNode;
   comunidad: ReactNode;
   recursos: ReactNode;
+  brandstein: ReactNode;
 }
 
-export default function TabsLayout({ inicio, calendario, ranking, comunidad, recursos }: Props) {
+export default function TabsLayout({ inicio, calendario, ranking, comunidad, recursos, brandstein }: Props) {
   const [active, setActive] = useState<TabId>("inicio");
 
-  const content: Record<TabId, ReactNode> = { inicio, calendario, ranking, comunidad, recursos };
+  const content: Record<TabId, ReactNode> = { inicio, calendario, ranking, comunidad, recursos, brandstein };
 
   return (
     <div className="flex flex-1 flex-col">
