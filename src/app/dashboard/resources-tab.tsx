@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type ResourceCategory = "libro" | "video" | "podcast" | "substack";
 type FilterCategory = "todos" | ResourceCategory;
@@ -26,13 +26,21 @@ function catMeta(cat: ResourceCategory) {
 }
 
 interface Props {
-  initialResources: Resource[];
   isAdmin: boolean;
 }
 
-export default function ResourcesTab({ initialResources, isAdmin }: Props) {
-  const [resources, setResources] = useState<Resource[]>(initialResources);
+export default function ResourcesTab({ isAdmin }: Props) {
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterCategory>("todos");
+
+  useEffect(() => {
+    fetch("/api/resources")
+      .then((r) => r.json())
+      .then((data) => setResources(data.resources ?? []))
+      .catch(() => {/* ignore, show empty */})
+      .finally(() => setLoading(false));
+  }, []);
 
   // Admin form state
   const [showForm, setShowForm] = useState(false);
@@ -69,6 +77,12 @@ export default function ResourcesTab({ initialResources, isAdmin }: Props) {
 
   function handleDeleted(id: string) {
     setResources((rs) => rs.filter((r) => r.id !== id));
+  }
+
+  if (loading) {
+    return (
+      <div className="py-16 text-center text-sm text-neutral-400">Cargando recursos…</div>
+    );
   }
 
   return (

@@ -8,11 +8,9 @@ import {
   getExtraCompletionsForUser,
   getJournalDatesForUser,
   getCommunityPosts,
-  getResources,
   type User,
   type ExtraCompletion,
   type CommunityPostWithComments,
-  type Resource,
 } from "@/lib/db";
 import { getChallengesForWeek } from "@/lib/challenges";
 import {
@@ -126,7 +124,6 @@ async function _dashboard() {
   let journalDates: string[] = [];
   let allUsers: User[] = [];
   let communityPosts: CommunityPostWithComments[] = [];
-  let resourcesList: Resource[] = [];
   let dataError: string | null = null;
 
   try {
@@ -136,7 +133,6 @@ async function _dashboard() {
     journalDates = getJournalDatesForUser(user.id);
     allUsers = getAllUsers();
     communityPosts = getCommunityPosts();
-    resourcesList = getResources();
   } catch (e) {
     dataError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
     console.error("[Dashboard] data loading failed:", e);
@@ -216,7 +212,6 @@ async function _dashboard() {
 
   const recursosContent = (
     <ResourcesTab
-      initialResources={resourcesList}
       isAdmin={isAdmin}
     />
   );

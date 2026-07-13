@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { createResource, type ResourceCategory } from "@/lib/db";
+import { createResource, getResources, type ResourceCategory } from "@/lib/db";
+
+export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  const resources = getResources();
+  return NextResponse.json({ resources });
+}
 
 const VALID_CATEGORIES = new Set<ResourceCategory>(["libro", "video", "podcast", "substack"]);
 
