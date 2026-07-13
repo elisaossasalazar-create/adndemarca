@@ -136,7 +136,8 @@ export function getUserById(id: string): User | undefined {
 
 export function getAllUsers(): User[] {
   const db = getDb();
-  return db.prepare("SELECT * FROM users ORDER BY points_total DESC").all() as unknown as User[];
+  const rows = db.prepare("SELECT * FROM users ORDER BY points_total DESC").all() as unknown as User[];
+  return rows.map((r) => ({ ...r }));
 }
 
 // ── Journal completions ───────────────────────────────────────────────────────
@@ -317,9 +318,10 @@ export interface Resource {
 
 export function getResources(): Resource[] {
   const db = getDb();
-  return db
+  const rows = db
     .prepare("SELECT * FROM resources ORDER BY created_at DESC")
     .all() as unknown as Resource[];
+  return rows.map((r) => ({ ...r }));
 }
 
 export function createResource(
