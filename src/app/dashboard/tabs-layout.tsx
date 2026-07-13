@@ -8,7 +8,6 @@ const TABS = [
   { id: "calendario", label: "Calendario" },
   { id: "ranking", label: "Ranking" },
   { id: "comunidad", label: "Comunidad" },
-  { id: "recursos", label: "Recursos" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -18,13 +17,12 @@ interface Props {
   calendario: ReactNode;
   ranking: ReactNode;
   comunidad: ReactNode;
-  recursos: ReactNode;
 }
 
-export default function TabsLayout({ inicio, calendario, ranking, comunidad, recursos }: Props) {
+export default function TabsLayout({ inicio, calendario, ranking, comunidad }: Props) {
   const [active, setActive] = useState<TabId>("inicio");
 
-  const content: Record<TabId, ReactNode> = { inicio, calendario, ranking, comunidad, recursos };
+  const content: Record<TabId, ReactNode> = { inicio, calendario, ranking, comunidad };
 
   return (
     <div className="flex flex-1 flex-col">

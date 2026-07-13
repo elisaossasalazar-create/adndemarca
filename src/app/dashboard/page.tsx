@@ -8,11 +8,9 @@ import {
   getExtraCompletionsForUser,
   getJournalDatesForUser,
   getCommunityPosts,
-  getResources,
   type User,
   type ExtraCompletion,
   type CommunityPostWithComments,
-  type Resource,
 } from "@/lib/db";
 import { getChallengesForWeek } from "@/lib/challenges";
 import {
@@ -28,7 +26,6 @@ import ExtraChallengeCard from "./extra-challenge-card";
 import CalendarTab from "./calendar-tab";
 import RankingTab from "./ranking-tab";
 import CommunityTab from "./community-tab";
-import ResourcesTab from "./resources-tab";
 import TabsLayout from "./tabs-layout";
 
 export const dynamic = "force-dynamic";
@@ -126,7 +123,6 @@ async function _dashboard() {
   let journalDates: string[] = [];
   let allUsers: User[] = [];
   let communityPosts: CommunityPostWithComments[] = [];
-  let resourcesList: Resource[] = [];
   let dataError: string | null = null;
 
   try {
@@ -136,7 +132,6 @@ async function _dashboard() {
     journalDates = getJournalDatesForUser(user.id);
     allUsers = getAllUsers();
     communityPosts = getCommunityPosts();
-    resourcesList = getResources();
   } catch (e) {
     dataError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
     console.error("[Dashboard] data loading failed:", e);
@@ -214,13 +209,6 @@ async function _dashboard() {
   const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
   const isAdmin = !!adminEmail && user.email.toLowerCase() === adminEmail;
 
-  const recursosContent = (
-    <ResourcesTab
-      initialResources={resourcesList}
-      isAdmin={isAdmin}
-    />
-  );
-
   const comunidadContent = (
     <CommunityTab
       initialPosts={communityPosts}
@@ -271,7 +259,6 @@ async function _dashboard() {
         calendario={calendarioContent}
         ranking={rankingContent}
         comunidad={comunidadContent}
-        recursos={recursosContent}
       />
     </div>
     </div>
