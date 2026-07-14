@@ -40,26 +40,38 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Sin mensajes" }, { status: 400 });
   }
 
-  const stream = client.messages.stream({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1500,
-    system: BRAND_STEIN_SYSTEM_PROMPT,
-    messages,
-  });
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: "ANTHROPIC_API_KEY no configurada" }, { status: 500 });
+  }
+
+  let anthropicStream: Awaited<ReturnType<typeof client.messages.create>>;
+  try {
+    anthropicStream = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      system: BRAND_STEIN_SYSTEM_PROMPT,
+      messages,
+      stream: true,
+    });
+  } catch (e) {
+    console.error("[BrandStein] Anthropic API error:", e);
+    return NextResponse.json({ error: "Error al conectar con la IA" }, { status: 500 });
+  }
 
   const readable = new ReadableStream({
     async start(controller) {
       try {
-        for await (const chunk of stream) {
+        for await (const event of anthropicStream) {
           if (
-            chunk.type === "content_block_delta" &&
-            chunk.delta.type === "text_delta"
+            event.type === "content_block_delta" &&
+            event.delta.type === "text_delta"
           ) {
-            controller.enqueue(new TextEncoder().encode(chunk.delta.text));
+            controller.enqueue(new TextEncoder().encode(event.delta.text));
           }
         }
         controller.close();
       } catch (e) {
+        console.error("[BrandStein] stream error:", e);
         controller.error(e);
       }
     },
