@@ -1,14 +1,11 @@
 "use client";
 
+import { PinkStar } from "@/components/star";
+
 export default function BrandSteinTab() {
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col items-center justify-center gap-6 py-16 text-center">
-      <div
-        className="flex h-16 w-16 items-center justify-center rounded-2xl text-3xl"
-        style={{ backgroundColor: "var(--brand-yellow)" }}
-      >
-        ✦
-      </div>
+      <PinkStar size={64} />
 
       <div>
         <p className="text-lg font-bold text-neutral-900">Brand-Stein</p>
