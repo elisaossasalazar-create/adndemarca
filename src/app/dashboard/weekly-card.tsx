@@ -22,10 +22,10 @@ export default function WeeklyCard({ done, week }: { done: boolean; week: number
             Reto semanal · Semana {week}
           </p>
           <h3 className="mt-1 text-base font-bold lowercase text-neutral-900">
-            comunidad de hotmart
+            reto de comunidad
           </h3>
           <p className="mt-1 text-sm font-normal text-neutral-600">
-            Sube tu entregable de esta semana a la comunidad de Hotmart.
+            Sube tu entregable de esta semana a la sección de comunidad.
           </p>
           <p className="mt-2 text-xs font-normal text-neutral-400">
             +{POINTS.WEEKLY_HOTMART} puntos

@@ -30,16 +30,9 @@ export function getCurrentWeek(): number {
 }
 
 const PHRASES = [
-  "Pasar a la acción todos los días vale más que tener el plan perfecto.",
-  "Tu marca se construye en los momentos en que decides hacerlo, no en los que lo planeas.",
-  "La consistencia es el diferencial que la mayoría no tiene.",
-  "Hoy es exactamente el día correcto para empezar.",
-  "Las marcas que perduran se construyen con autenticidad, no con perfección.",
-  "Cada reto completado es una versión más real de tu marca.",
-  "No necesitas saberlo todo. Solo necesitas hacer algo hoy.",
-  "Tu audiencia está esperando exactamente lo que tú eres.",
-  "Las marcas fuertes se forjan en la práctica diaria.",
-  "El mejor contenido viene de quien se anima a mostrarse de verdad.",
+  "acción sobre perfección",
+  "da el paso y aparecerá la escalera",
+  "Dios no se equivocó con las ideas, dones o talentos que me dió",
 ];
 
 export function getMotivationalPhrase(): string {
