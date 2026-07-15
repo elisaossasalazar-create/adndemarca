@@ -42,7 +42,10 @@ export async function POST(request: Request) {
     });
   }
 
-  const today = getTodayUTCString();
+  const yesterday = new Date();
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+
   const week = getCurrentWeek();
   const weekChallengeIds = getChallengesForWeek(week).map((c) => c.id);
   const users = getAllUsers();
@@ -51,7 +54,7 @@ export async function POST(request: Request) {
   const results: Array<{ email: string; scenario: string; status: string }> = [];
 
   for (const user of users) {
-    const journalDone = hasJournalForDate(user.id, today);
+    const journalDone = hasJournalForDate(user.id, yesterdayStr);
     const weeklyDone = hasWeeklyCompletion(user.id, week);
     const anyExtraDone = hasAnyExtraForWeek(user.id, weekChallengeIds);
 
