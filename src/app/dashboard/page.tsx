@@ -256,7 +256,7 @@ async function _dashboard() {
           <span className="font-medium text-neutral-700">Recuerda que:</span>
           <ul className="mt-1 list-none space-y-1 pl-0">
             <li className="flex items-start gap-1.5"><Star size={11} className="mt-0.5 flex-shrink-0" />acción sobre perfección</li>
-            <li className="flex items-start gap-1.5"><Star size={11} className="mt-0.5 flex-shrink-0" />da el paso y aparecerá la escalera</li>
+            <li className="flex items-start gap-1.5"><Star size={11} className="mt-0.5 flex-shrink-0" />doy el paso y aparece la escalera</li>
             <li className="flex items-start gap-1.5"><Star size={11} className="mt-0.5 flex-shrink-0" />Dios no se equivocó con las ideas, dones o talentos que me dió</li>
           </ul>
         </div>
