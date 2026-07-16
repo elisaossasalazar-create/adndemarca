@@ -393,7 +393,11 @@ export function getCommunityPosts(): CommunityPostWithComments[] {
   for (const c of comments) {
     (byPost[c.post_id] ??= []).push(c);
   }
-  return posts.map((p) => ({ ...p, comments: byPost[p.id] ?? [] }));
+  return posts.map((p) => ({
+    ...p,
+    post_type: (p.post_type ?? "reto") as "reto" | "libre",
+    comments: (byPost[p.id] ?? []).map((c) => ({ ...c })),
+  }));
 }
 
 export function createCommunityPost(
