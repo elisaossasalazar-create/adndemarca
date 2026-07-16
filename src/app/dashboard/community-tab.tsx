@@ -34,6 +34,7 @@ interface Props {
 
 export default function CommunityTab({ initialPosts, currentUserId, currentWeek, isAdmin }: Props) {
   const [posts, setPosts] = useState<CommunityPost[]>(initialPosts);
+  const [activeSection, setActiveSection] = useState<"reto" | "libre">("reto");
 
   function handlePostCreated(post: CommunityPost) {
     setPosts((ps) => [{ ...post, comments: [] }, ...ps]);
@@ -55,37 +56,60 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek,
   const librePosts = posts.filter((p) => p.post_type === "libre");
 
   return (
-    <div className="mx-auto w-full max-w-lg flex flex-col gap-8">
-      {/* Section 1: Reto de la semana */}
-      <Section
-        title={`Reto de la semana · Semana ${currentWeek}`}
-        placeholder="¿Qué descubriste esta semana sobre tu marca?"
-        postType="reto"
-        posts={retoPosts}
-        currentUserId={currentUserId}
-        isAdmin={isAdmin}
-        emptyMessage="sé la primera en compartir tu reto ✨"
-        onPostCreated={handlePostCreated}
-        onCommentAdded={handleCommentAdded}
-        onPostDeleted={handlePostDeleted}
-      />
+    <div className="mx-auto w-full max-w-lg flex flex-col gap-5">
+      {/* Section switcher */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setActiveSection("reto")}
+          className="flex-1 rounded-full py-2 text-sm font-bold transition"
+          style={
+            activeSection === "reto"
+              ? { backgroundColor: "var(--brand-pink)", color: "white" }
+              : { backgroundColor: "#f5f5f5", color: "#737373" }
+          }
+        >
+          reto de la semana
+        </button>
+        <button
+          onClick={() => setActiveSection("libre")}
+          className="flex-1 rounded-full py-2 text-sm font-bold transition"
+          style={
+            activeSection === "libre"
+              ? { backgroundColor: "var(--brand-pink)", color: "white" }
+              : { backgroundColor: "#f5f5f5", color: "#737373" }
+          }
+        >
+          comparte lo que quieras
+        </button>
+      </div>
 
-      {/* Divider */}
-      <div className="border-t border-neutral-100" />
-
-      {/* Section 2: Comparte lo que quieras */}
-      <Section
-        title="Comparte lo que quieras"
-        placeholder="Comparte algo que te inspire, una reflexión, un recurso…"
-        postType="libre"
-        posts={librePosts}
-        currentUserId={currentUserId}
-        isAdmin={isAdmin}
-        emptyMessage="aún no hay publicaciones libres · sé la primera ✨"
-        onPostCreated={handlePostCreated}
-        onCommentAdded={handleCommentAdded}
-        onPostDeleted={handlePostDeleted}
-      />
+      {activeSection === "reto" ? (
+        <Section
+          title={`Semana ${currentWeek}`}
+          placeholder="¿Qué descubriste esta semana sobre tu marca?"
+          postType="reto"
+          posts={retoPosts}
+          currentUserId={currentUserId}
+          isAdmin={isAdmin}
+          emptyMessage="sé la primera en compartir tu reto ✨"
+          onPostCreated={handlePostCreated}
+          onCommentAdded={handleCommentAdded}
+          onPostDeleted={handlePostDeleted}
+        />
+      ) : (
+        <Section
+          title="comparte algo"
+          placeholder="Comparte algo que te inspire, una reflexión, un recurso…"
+          postType="libre"
+          posts={librePosts}
+          currentUserId={currentUserId}
+          isAdmin={isAdmin}
+          emptyMessage="aún no hay publicaciones · sé la primera ✨"
+          onPostCreated={handlePostCreated}
+          onCommentAdded={handleCommentAdded}
+          onPostDeleted={handlePostDeleted}
+        />
+      )}
     </div>
   );
 }
