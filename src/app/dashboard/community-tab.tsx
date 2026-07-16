@@ -17,6 +17,7 @@ interface CommunityPost {
   user_id: string;
   user_name: string;
   week_number: number;
+  post_type: "reto" | "libre";
   content: string;
   file_name: string | null;
   file_type: string | null;
@@ -33,6 +34,85 @@ interface Props {
 
 export default function CommunityTab({ initialPosts, currentUserId, currentWeek, isAdmin }: Props) {
   const [posts, setPosts] = useState<CommunityPost[]>(initialPosts);
+
+  function handlePostCreated(post: CommunityPost) {
+    setPosts((ps) => [{ ...post, comments: [] }, ...ps]);
+  }
+
+  function handleCommentAdded(postId: string, comment: CommunityComment) {
+    setPosts((ps) =>
+      ps.map((p) =>
+        p.id === postId ? { ...p, comments: [...p.comments, comment] } : p
+      )
+    );
+  }
+
+  function handlePostDeleted(postId: string) {
+    setPosts((ps) => ps.filter((p) => p.id !== postId));
+  }
+
+  const retoPosts = posts.filter((p) => p.post_type === "reto");
+  const librePosts = posts.filter((p) => p.post_type === "libre");
+
+  return (
+    <div className="mx-auto w-full max-w-lg flex flex-col gap-8">
+      {/* Section 1: Reto de la semana */}
+      <Section
+        title={`Reto de la semana · Semana ${currentWeek}`}
+        placeholder="¿Qué descubriste esta semana sobre tu marca?"
+        postType="reto"
+        posts={retoPosts}
+        currentUserId={currentUserId}
+        isAdmin={isAdmin}
+        emptyMessage="sé la primera en compartir tu reto ✨"
+        onPostCreated={handlePostCreated}
+        onCommentAdded={handleCommentAdded}
+        onPostDeleted={handlePostDeleted}
+      />
+
+      {/* Divider */}
+      <div className="border-t border-neutral-100" />
+
+      {/* Section 2: Comparte lo que quieras */}
+      <Section
+        title="Comparte lo que quieras"
+        placeholder="Comparte algo que te inspire, una reflexión, un recurso…"
+        postType="libre"
+        posts={librePosts}
+        currentUserId={currentUserId}
+        isAdmin={isAdmin}
+        emptyMessage="aún no hay publicaciones libres · sé la primera ✨"
+        onPostCreated={handlePostCreated}
+        onCommentAdded={handleCommentAdded}
+        onPostDeleted={handlePostDeleted}
+      />
+    </div>
+  );
+}
+
+function Section({
+  title,
+  placeholder,
+  postType,
+  posts,
+  currentUserId,
+  isAdmin,
+  emptyMessage,
+  onPostCreated,
+  onCommentAdded,
+  onPostDeleted,
+}: {
+  title: string;
+  placeholder: string;
+  postType: "reto" | "libre";
+  posts: CommunityPost[];
+  currentUserId: string;
+  isAdmin: boolean;
+  emptyMessage: string;
+  onPostCreated: (post: CommunityPost) => void;
+  onCommentAdded: (postId: string, comment: CommunityComment) => void;
+  onPostDeleted: (postId: string) => void;
+}) {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
@@ -69,18 +149,17 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek,
 
     const formData = new FormData();
     formData.append("content", text);
+    formData.append("post_type", postType);
     if (file) formData.append("file", file);
 
     try {
       const res = await fetch("/api/community", { method: "POST", body: formData });
       const data = await res.json();
-
       if (!res.ok) {
         setError(data.error ?? "No se pudo publicar.");
         return;
       }
-
-      setPosts([{ ...data.post, comments: [] }, ...posts]);
+      onPostCreated(data.post as CommunityPost);
       setText("");
       removeFile();
     } catch {
@@ -90,37 +169,24 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek,
     }
   }
 
-  function handleCommentAdded(postId: string, comment: CommunityComment) {
-    setPosts((ps) =>
-      ps.map((p) =>
-        p.id === postId ? { ...p, comments: [...p.comments, comment] } : p
-      )
-    );
-  }
-
-  function handlePostDeleted(postId: string) {
-    setPosts((ps) => ps.filter((p) => p.id !== postId));
-  }
-
   return (
-    <div className="mx-auto w-full max-w-lg flex flex-col gap-5">
-      {/* New post form */}
+    <div className="flex flex-col gap-5">
+      {/* Form */}
       <div className="rounded-2xl border border-neutral-100 p-4 flex flex-col gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">
-          Semana {currentWeek} · comparte tu reto
+          {title}
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="¿Qué descubriste esta semana sobre tu marca?"
+            placeholder={placeholder}
             rows={3}
             maxLength={1000}
             className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-[#FF63A6] transition-colors resize-none"
           />
 
-          {/* Image preview */}
           {filePreview && (
             <div className="relative">
               <img src={filePreview} alt="preview" className="rounded-xl max-h-48 object-cover w-full" />
@@ -134,7 +200,6 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek,
             </div>
           )}
 
-          {/* Non-image file */}
           {file && !filePreview && (
             <div className="flex items-center gap-2 rounded-xl bg-neutral-50 px-3 py-2.5">
               <span className="text-xs text-neutral-500">📎</span>
@@ -183,9 +248,9 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek,
 
       {/* Feed */}
       {posts.length === 0 ? (
-        <div className="py-12 text-center">
-          <Star size={20} className="mx-auto mb-3 opacity-30" />
-          <p className="text-sm text-neutral-400">sé la primera en compartir tu reto ✨</p>
+        <div className="py-8 text-center">
+          <Star size={18} className="mx-auto mb-3 opacity-30" />
+          <p className="text-sm text-neutral-400">{emptyMessage}</p>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
@@ -195,8 +260,8 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek,
               post={post}
               isMe={post.user_id === currentUserId}
               isAdmin={isAdmin}
-              onCommentAdded={(comment) => handleCommentAdded(post.id, comment)}
-              onDeleted={() => handlePostDeleted(post.id)}
+              onCommentAdded={(comment) => onCommentAdded(post.id, comment)}
+              onDeleted={() => onPostDeleted(post.id)}
             />
           ))}
         </div>
@@ -231,7 +296,7 @@ function PostCard({
       const res = await fetch(`/api/community/${post.id}`, { method: "DELETE" });
       if (res.ok) onDeleted();
     } catch {
-      // silently ignore — post stays visible
+      // silently ignore
     } finally {
       setDeleting(false);
     }
@@ -266,7 +331,6 @@ function PostCard({
   const isImage = post.file_type?.startsWith("image/");
   const isVideo = post.file_type?.startsWith("video/");
   const isPdf = post.file_type === "application/pdf";
-
   const commentCount = post.comments.length;
 
   return (
@@ -274,7 +338,6 @@ function PostCard({
       className="rounded-2xl overflow-hidden border"
       style={{ borderColor: isMe ? "var(--brand-pink)" : "#f0f0f0" }}
     >
-      {/* Post header */}
       <div className="px-4 pt-4 pb-2 flex items-start justify-between gap-2">
         <div>
           <p className="text-sm font-bold lowercase text-neutral-900">{post.user_name}</p>
@@ -304,31 +367,19 @@ function PostCard({
         </div>
       </div>
 
-      {/* Text */}
       {post.content && (
         <p className="px-4 pb-3 text-sm text-neutral-800 leading-relaxed whitespace-pre-wrap">
           {post.content}
         </p>
       )}
 
-      {/* Media */}
       {fileUrl && isImage && (
         <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-          <img
-            src={fileUrl}
-            alt="adjunto"
-            className="w-full max-h-96 object-cover cursor-pointer"
-          />
+          <img src={fileUrl} alt="adjunto" className="w-full max-h-96 object-cover cursor-pointer" />
         </a>
       )}
       {fileUrl && isVideo && (
-        <video
-          src={fileUrl}
-          controls
-          playsInline
-          className="w-full max-h-80 bg-black"
-          preload="metadata"
-        />
+        <video src={fileUrl} controls playsInline className="w-full max-h-80 bg-black" preload="metadata" />
       )}
       {fileUrl && isPdf && (
         <div className="px-4 pb-3">
@@ -344,7 +395,6 @@ function PostCard({
         </div>
       )}
 
-      {/* Comments toggle */}
       <div className="border-t border-neutral-100 px-4 py-2.5">
         <button
           onClick={() => setShowComments((s) => !s)}
@@ -357,7 +407,6 @@ function PostCard({
         </button>
       </div>
 
-      {/* Comments section */}
       {showComments && (
         <div className="border-t border-neutral-100 bg-neutral-50/50">
           {post.comments.map((c) => (

@@ -65,6 +65,7 @@ const SCHEMA_STATEMENTS = [
     user_id TEXT NOT NULL REFERENCES users(id),
     user_name TEXT NOT NULL,
     week_number INTEGER NOT NULL,
+    post_type TEXT NOT NULL DEFAULT 'reto',
     content TEXT NOT NULL DEFAULT '',
     file_name TEXT,
     file_type TEXT,
@@ -96,7 +97,10 @@ function getDb(): DatabaseSync {
       db.exec(sql);
     }
   }
-  return global.__db;
+  // migrations
+  try { global.__db!.exec("ALTER TABLE community_posts ADD COLUMN post_type TEXT NOT NULL DEFAULT 'reto'"); } catch { /* column already exists */ }
+
+  return global.__db!
 }
 
 export interface User {
@@ -356,6 +360,7 @@ export interface CommunityPost {
   user_id: string;
   user_name: string;
   week_number: number;
+  post_type: "reto" | "libre";
   content: string;
   file_name: string | null;
   file_type: string | null;
@@ -398,13 +403,14 @@ export function createCommunityPost(
   content: string,
   fileName: string | null,
   fileType: string | null,
+  postType: "reto" | "libre" = "reto",
 ): CommunityPost {
   const db = getDb();
   const id = randomUUID();
   db.prepare(
-    `INSERT INTO community_posts (id, user_id, user_name, week_number, content, file_name, file_type)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`
-  ).run(id, userId, userName, weekNumber, content, fileName, fileType);
+    `INSERT INTO community_posts (id, user_id, user_name, week_number, post_type, content, file_name, file_type)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+  ).run(id, userId, userName, weekNumber, postType, content, fileName, fileType);
   return db.prepare("SELECT * FROM community_posts WHERE id = ?").get(id) as unknown as CommunityPost;
 }
 

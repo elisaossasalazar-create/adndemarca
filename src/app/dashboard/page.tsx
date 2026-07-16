@@ -253,7 +253,7 @@ async function _dashboard() {
           </div>
         </div>
         <div className="mt-3 text-xs sm:text-sm font-normal text-neutral-500 leading-relaxed">
-          <span className="font-medium text-neutral-700">Recuerda que:</span>
+          <span className="font-medium text-neutral-700">recordatorios</span>
           <ul className="mt-1 list-none space-y-1 pl-0">
             <li className="flex items-start gap-1.5"><Star size={11} className="mt-0.5 flex-shrink-0" />acción sobre perfección</li>
             <li className="flex items-start gap-1.5"><Star size={11} className="mt-0.5 flex-shrink-0" />doy el paso y aparece la escalera</li>

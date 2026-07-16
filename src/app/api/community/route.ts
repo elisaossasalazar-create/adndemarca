@@ -68,8 +68,11 @@ export async function POST(request: Request) {
     fileType = file.type;
   }
 
+  const rawPostType = String(formData.get("post_type") ?? "reto").trim();
+  const postType: "reto" | "libre" = rawPostType === "libre" ? "libre" : "reto";
+
   const week = getCurrentWeek();
-  const post = createCommunityPost(session.user.id, user.full_name, week, content, fileName, fileType);
+  const post = createCommunityPost(session.user.id, user.full_name, week, content, fileName, fileType, postType);
 
   return NextResponse.json({ ok: true, post });
 }
