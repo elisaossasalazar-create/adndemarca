@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getAllUsersWithStats } from "@/lib/db";
 import { getEffectivePoints } from "@/lib/points.server";
-import { updatePointSettings, adjustPoints, removeUser } from "./actions";
+import { updatePointSettings, adjustPoints } from "./actions";
+import DeleteUserButton from "./delete-user-button";
 
 export const dynamic = "force-dynamic";
 
@@ -160,16 +161,7 @@ export default async function AdminPage() {
                             </button>
                           </form>
                           {/* Delete user */}
-                          <form action={removeUser}>
-                            <input type="hidden" name="userId" value={user.id} />
-                            <button
-                              type="submit"
-                              className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
-                              title="Eliminar participante"
-                            >
-                              ✕
-                            </button>
-                          </form>
+                          <DeleteUserButton userId={user.id} userName={user.full_name} />
                         </div>
                       </td>
                     </tr>
