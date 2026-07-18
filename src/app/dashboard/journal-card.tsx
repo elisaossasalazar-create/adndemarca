@@ -64,9 +64,9 @@ export default function JournalCard({ done }: { done: boolean }) {
           <p className="mt-1 text-sm font-normal text-neutral-600">
             Escribe una página de journal — reflexión libre, autoconocimiento.
           </p>
-          <div className="mt-3 rounded-xl px-3 py-2.5" style={{ backgroundColor: done ? "#fff8e1" : "#fdf4ff" }}>
+          <div className="mt-3 rounded-xl border px-3 py-2.5" style={{ backgroundColor: done ? "#fff8e1" : "#fdf4ff", borderColor: "var(--brand-pink)" }}>
             <p className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: "var(--brand-pink)" }}>
-              pregunta de hoy
+              ✦ pregunta de hoy
             </p>
             <p className="text-sm text-neutral-700 leading-relaxed italic">
               {question}
