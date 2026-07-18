@@ -25,7 +25,7 @@ export default function JournalCard({ done }: { done: boolean }) {
             journaling
           </h3>
           <p className="mt-1 text-sm font-normal text-neutral-600">
-            Escribe 3 páginas de journal — reflexión libre, autoconocimiento.
+            Escribe una página de journal — reflexión libre, autoconocimiento.
           </p>
           <p className="mt-2 text-xs font-normal text-neutral-400">
             +{POINTS.JOURNAL_DAILY} puntos
