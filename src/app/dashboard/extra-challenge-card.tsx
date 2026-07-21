@@ -85,7 +85,7 @@ export default function ExtraChallengeCard({ challenge, done, evidenceFilename }
               <p className="text-xs text-neutral-500 mb-2">Evidencia entregada:</p>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`/uploads/${evidenceFilename}`}
+                src={`/api/files/${evidenceFilename}`}
                 alt="Evidencia del reto"
                 className="max-h-48 rounded-xl object-cover"
               />

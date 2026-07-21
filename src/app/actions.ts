@@ -45,7 +45,7 @@ export async function markExtraComplete(formData: FormData) {
   if (!allowedExt.includes(ext)) throw new Error("Formato de imagen no válido");
 
   const filename = `${randomUUID()}.${ext}`;
-  const uploadsDir = join(process.cwd(), "public", "uploads");
+  const uploadsDir = join(process.cwd(), "data", "uploads");
   mkdirSync(uploadsDir, { recursive: true });
 
   const bytes = await file.arrayBuffer();
