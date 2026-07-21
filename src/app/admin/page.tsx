@@ -33,7 +33,16 @@ export default async function AdminPage() {
           >
             ← Dashboard
           </a>
-          <h1 className="mt-3 text-2xl font-bold lowercase text-neutral-900">panel de administración</h1>
+          <div className="mt-3 flex items-center justify-between gap-4">
+            <h1 className="text-2xl font-bold lowercase text-neutral-900">panel de administración</h1>
+            <a
+              href="/api/admin/backup"
+              download
+              className="flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-xs font-semibold text-neutral-600 hover:border-neutral-400 hover:text-neutral-900 transition-colors whitespace-nowrap"
+            >
+              ↓ backup .db
+            </a>
+          </div>
           <p className="mt-1 text-xs tracking-[0.2em] uppercase text-neutral-400">The Brand Camp · ADN de Marca · 7ma Edición</p>
         </div>
 
