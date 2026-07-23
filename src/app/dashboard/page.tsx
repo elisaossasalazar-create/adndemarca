@@ -9,6 +9,7 @@ import {
   getJournalDatesForUser,
   getCommunityPosts,
   getUnreadNotifications,
+  createReminderIfNeeded,
   type User,
   type ExtraCompletion,
   type CommunityPostWithComments,
@@ -138,6 +139,14 @@ async function _dashboard() {
     journalDates = getJournalDatesForUser(user.id);
     allUsers = getAllUsers();
     communityPosts = getCommunityPosts();
+
+    if (!journalDone) {
+      createReminderIfNeeded(user.id, "journal_reminder", "Recuerda hacer tu journaling de hoy — cada entrada suma puntos.");
+    }
+    if (!weeklyDone) {
+      createReminderIfNeeded(user.id, "weekly_reminder", `Tienes el reto semanal de Hotmart pendiente esta semana.`);
+    }
+
     notifications = getUnreadNotifications(user.id);
   } catch (e) {
     dataError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);

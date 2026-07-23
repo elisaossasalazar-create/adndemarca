@@ -88,6 +88,7 @@ const SCHEMA_STATEMENTS = [
   `CREATE TABLE IF NOT EXISTS notifications (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id),
+    type TEXT NOT NULL DEFAULT 'comment',
     message TEXT NOT NULL,
     post_id TEXT,
     read INTEGER NOT NULL DEFAULT 0,
@@ -107,6 +108,7 @@ function getDb(): DatabaseSync {
   }
   // migrations
   try { global.__db!.exec("ALTER TABLE community_posts ADD COLUMN post_type TEXT NOT NULL DEFAULT 'reto'"); } catch { /* column already exists */ }
+  try { global.__db!.exec("ALTER TABLE notifications ADD COLUMN type TEXT NOT NULL DEFAULT 'comment'"); } catch { /* column already exists */ }
 
   return global.__db!
 }
@@ -504,11 +506,23 @@ export interface Notification {
   created_at: string;
 }
 
-export function createNotification(userId: string, message: string, postId: string | null): void {
+export function createNotification(userId: string, message: string, postId: string | null, type: string = "comment"): void {
   const db = getDb();
   db.prepare(
-    "INSERT INTO notifications (id, user_id, message, post_id) VALUES (?, ?, ?, ?)"
-  ).run(randomUUID(), userId, message, postId);
+    "INSERT INTO notifications (id, user_id, type, message, post_id) VALUES (?, ?, ?, ?, ?)"
+  ).run(randomUUID(), userId, type, message, postId);
+}
+
+export function hasReminderToday(userId: string, type: string): boolean {
+  const db = getDb();
+  return !!db.prepare(
+    "SELECT id FROM notifications WHERE user_id = ? AND type = ? AND DATE(created_at) = DATE('now')"
+  ).get(userId, type);
+}
+
+export function createReminderIfNeeded(userId: string, type: string, message: string): void {
+  if (hasReminderToday(userId, type)) return;
+  createNotification(userId, message, null, type);
 }
 
 export function getUnreadNotifications(userId: string): Notification[] {
