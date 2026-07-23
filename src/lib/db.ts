@@ -85,6 +85,14 @@ const SCHEMA_STATEMENTS = [
     messages_json TEXT NOT NULL DEFAULT '[]',
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
+  `CREATE TABLE IF NOT EXISTS notifications (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    message TEXT NOT NULL,
+    post_id TEXT,
+    read INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
 ];
 
 function getDb(): DatabaseSync {
@@ -483,6 +491,44 @@ export function saveBrandSteinConversation(userId: string, messages: BrandSteinM
 export function clearBrandSteinConversation(userId: string): void {
   const db = getDb();
   db.prepare("DELETE FROM brandstein_conversations WHERE user_id = ?").run(userId);
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  message: string;
+  post_id: string | null;
+  read: number;
+  created_at: string;
+}
+
+export function createNotification(userId: string, message: string, postId: string | null): void {
+  const db = getDb();
+  db.prepare(
+    "INSERT INTO notifications (id, user_id, message, post_id) VALUES (?, ?, ?, ?)"
+  ).run(randomUUID(), userId, message, postId);
+}
+
+export function getUnreadNotifications(userId: string): Notification[] {
+  const db = getDb();
+  const rows = db.prepare(
+    "SELECT * FROM notifications WHERE user_id = ? AND read = 0 ORDER BY created_at DESC LIMIT 30"
+  ).all(userId) as unknown as Notification[];
+  return rows.map((r) => ({ ...r }));
+}
+
+export function markAllNotificationsRead(userId: string): void {
+  const db = getDb();
+  db.prepare("UPDATE notifications SET read = 1 WHERE user_id = ? AND read = 0").run(userId);
+}
+
+export function getCommunityPostById(postId: string): CommunityPost | undefined {
+  const db = getDb();
+  const row = db.prepare("SELECT * FROM community_posts WHERE id = ?").get(postId) as unknown as CommunityPost | undefined;
+  if (!row) return undefined;
+  return { ...row };
 }
 
 export function createCommunityComment(

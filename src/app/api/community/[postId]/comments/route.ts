@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { getUserById, createCommunityComment } from "@/lib/db";
+import { getUserById, createCommunityComment, getCommunityPostById, createNotification } from "@/lib/db";
 
 export async function POST(
   request: Request,
@@ -34,6 +34,17 @@ export async function POST(
   }
 
   const comment = createCommunityComment(postId, session.user.id, user.full_name, content);
+
+  // Notify post owner (skip if they commented on their own post)
+  const post = getCommunityPostById(postId);
+  if (post && post.user_id !== session.user.id) {
+    const preview = content.length > 60 ? content.slice(0, 60) + "…" : content;
+    createNotification(
+      post.user_id,
+      `${user.full_name} comentó tu publicación: "${preview}"`,
+      postId,
+    );
+  }
 
   return NextResponse.json({ ok: true, comment });
 }

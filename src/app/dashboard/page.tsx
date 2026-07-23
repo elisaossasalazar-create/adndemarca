@@ -8,9 +8,11 @@ import {
   getExtraCompletionsForUser,
   getJournalDatesForUser,
   getCommunityPosts,
+  getUnreadNotifications,
   type User,
   type ExtraCompletion,
   type CommunityPostWithComments,
+  type Notification,
 } from "@/lib/db";
 import { getChallengesForWeek } from "@/lib/challenges";
 import {
@@ -20,6 +22,7 @@ import {
 } from "@/lib/course";
 import { Star, PinkStar } from "@/components/star";
 import LogoutButton from "./logout-button";
+import NotificationsBell from "@/components/notifications-bell";
 import JournalCard from "./journal-card";
 import WeeklyCard from "./weekly-card";
 import ExtraChallengeCard from "./extra-challenge-card";
@@ -125,6 +128,7 @@ async function _dashboard() {
   let journalDates: string[] = [];
   let allUsers: User[] = [];
   let communityPosts: CommunityPostWithComments[] = [];
+  let notifications: Notification[] = [];
   let dataError: string | null = null;
 
   try {
@@ -134,6 +138,7 @@ async function _dashboard() {
     journalDates = getJournalDatesForUser(user.id);
     allUsers = getAllUsers();
     communityPosts = getCommunityPosts();
+    notifications = getUnreadNotifications(user.id);
   } catch (e) {
     dataError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
     console.error("[Dashboard] data loading failed:", e);
@@ -240,14 +245,17 @@ async function _dashboard() {
             </p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <div
-              className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
-              style={{ backgroundColor: "var(--brand-yellow)" }}
-            >
-              <Star size={13} />
-              <span className="text-xs font-bold text-neutral-900">
-                {user.points_total} pts
-              </span>
+            <div className="flex items-center gap-2">
+              <NotificationsBell notifications={notifications} />
+              <div
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
+                style={{ backgroundColor: "var(--brand-yellow)" }}
+              >
+                <Star size={13} />
+                <span className="text-xs font-bold text-neutral-900">
+                  {user.points_total} pts
+                </span>
+              </div>
             </div>
             <LogoutButton />
           </div>
