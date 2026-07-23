@@ -144,7 +144,7 @@ async function _dashboard() {
       createReminderIfNeeded(user.id, "journal_reminder", "Recuerda hacer tu journaling de hoy — cada entrada suma puntos.");
     }
     if (!weeklyDone) {
-      createReminderIfNeeded(user.id, "weekly_reminder", `Tienes el reto semanal de Hotmart pendiente esta semana.`);
+      createReminderIfNeeded(user.id, "weekly_reminder", "Tienes el reto semanal pendiente esta semana.");
     }
 
     notifications = getUnreadNotifications(user.id);
