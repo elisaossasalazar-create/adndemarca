@@ -220,7 +220,14 @@ export function hasExtraCompletion(userId: string, challengeId: string): boolean
 
 export function getExtraCompletionsForUser(userId: string): ExtraCompletion[] {
   const db = getDb();
-  return db.prepare("SELECT * FROM extra_completions WHERE user_id = ?").all(userId) as unknown as ExtraCompletion[];
+  const rows = db.prepare("SELECT * FROM extra_completions WHERE user_id = ?").all(userId) as unknown as ExtraCompletion[];
+  return rows.map((r) => ({ ...r }));
+}
+
+export function getAllExtraCompletions(): ExtraCompletion[] {
+  const db = getDb();
+  const rows = db.prepare("SELECT * FROM extra_completions ORDER BY user_id, created_at ASC").all() as unknown as ExtraCompletion[];
+  return rows.map((r) => ({ ...r }));
 }
 
 export function addExtraCompletion(userId: string, challengeId: string, evidenceFilename: string, points: number): boolean {
@@ -271,7 +278,7 @@ export interface AdminUserRow {
 
 export function getAllUsersWithStats(): AdminUserRow[] {
   const db = getDb();
-  return db
+  const rows = db
     .prepare(
       `SELECT
          u.id, u.full_name, u.email, u.social_handle, u.phone,
@@ -287,6 +294,7 @@ export function getAllUsersWithStats(): AdminUserRow[] {
        ORDER BY u.points_total DESC`
     )
     .all() as unknown as AdminUserRow[];
+  return rows.map((r) => ({ ...r }));
 }
 
 export function adjustUserPointsDelta(userId: string, delta: number): void {

@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { getAllUsersWithStats } from "@/lib/db";
+import { getAllUsersWithStats, getAllExtraCompletions } from "@/lib/db";
 import { getEffectivePoints } from "@/lib/points.server";
-import { updatePointSettings, adjustPoints } from "./actions";
-import DeleteUserButton from "./delete-user-button";
+import { updatePointSettings } from "./actions";
+import { ALL_CHALLENGES } from "@/lib/challenges";
+import AdminUserRows from "./user-rows";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,12 @@ export default async function AdminPage() {
   if (!adminEmail || session.user.email?.toLowerCase() !== adminEmail) redirect("/dashboard");
 
   const users = getAllUsersWithStats();
+  const allExtras = getAllExtraCompletions();
+  const extrasByUser: Record<string, typeof allExtras> = {};
+  for (const ec of allExtras) {
+    (extrasByUser[ec.user_id] ??= []).push(ec);
+  }
+  const challengeInfo = ALL_CHALLENGES.map((c) => ({ id: c.id, week: c.week, title: c.title }));
 
   const pts = getEffectivePoints();
   const journalPoints = pts.JOURNAL_DAILY;
@@ -137,45 +144,11 @@ export default async function AdminPage() {
                     <th className="px-4 py-3"></th>
                   </tr>
                 </thead>
-                <tbody>
-                  {users.map((user, i) => (
-                    <tr
-                      key={user.id}
-                      className={`border-b border-neutral-100 last:border-0 ${i % 2 === 0 ? "" : "bg-neutral-50/50"}`}
-                    >
-                      <td className="px-4 py-3 font-medium text-neutral-900">{user.full_name}</td>
-                      <td className="px-4 py-3 text-neutral-500">{user.email}</td>
-                      <td className="px-4 py-3 text-neutral-500 hidden sm:table-cell">{user.social_handle}</td>
-                      <td className="px-4 py-3 text-right font-semibold text-neutral-900">{user.points_total}</td>
-                      <td className="px-4 py-3 text-right text-neutral-500 hidden md:table-cell">{user.journal_count}</td>
-                      <td className="px-4 py-3 text-right text-neutral-500 hidden md:table-cell">{user.weekly_count}/5</td>
-                      <td className="px-4 py-3 text-right text-neutral-500 hidden md:table-cell">{user.extra_count}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-2">
-                          {/* Adjust points */}
-                          <form action={adjustPoints} className="flex items-center gap-1">
-                            <input type="hidden" name="userId" value={user.id} />
-                            <input
-                              type="number"
-                              name="delta"
-                              placeholder="±pts"
-                              className="w-16 border border-neutral-200 rounded-lg px-2 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                            />
-                            <button
-                              type="submit"
-                              className="text-xs bg-neutral-100 hover:bg-neutral-200 px-2 py-1 rounded-lg transition-colors"
-                              title="Ajustar puntos"
-                            >
-                              ±
-                            </button>
-                          </form>
-                          {/* Delete user */}
-                          <DeleteUserButton userId={user.id} userName={user.full_name} />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+                <AdminUserRows
+                  users={users}
+                  extrasByUser={extrasByUser}
+                  challenges={challengeInfo}
+                />
               </table>
             </div>
           )}
