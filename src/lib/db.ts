@@ -304,6 +304,19 @@ export function adjustUserPointsDelta(userId: string, delta: number): void {
   ).run(delta, userId);
 }
 
+export function deleteExtraCompletion(completionId: string, userId: string, pointsToDeduct: number): void {
+  const db = getDb();
+  db.exec("BEGIN");
+  try {
+    db.prepare("DELETE FROM extra_completions WHERE id = ? AND user_id = ?").run(completionId, userId);
+    db.prepare("UPDATE users SET points_total = MAX(0, points_total - ?) WHERE id = ?").run(pointsToDeduct, userId);
+    db.exec("COMMIT");
+  } catch (e) {
+    db.exec("ROLLBACK");
+    throw e;
+  }
+}
+
 export function deleteUser(userId: string): void {
   const db = getDb();
   db.exec("BEGIN");

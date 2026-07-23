@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { adjustPoints } from "./actions";
+import { adjustPoints, resetExtraCompletion } from "./actions";
 import DeleteUserButton from "./delete-user-button";
 
 interface AdminUserRow {
@@ -112,10 +112,36 @@ export default function AdminUserRows({ users, extrasByUser, challenges }: Props
                                 src={`/api/files/${ec.evidence_filename}`}
                                 alt={title}
                                 className="w-32 h-24 object-cover rounded-xl border border-neutral-100 hover:opacity-90 transition-opacity"
+                                onError={(e) => {
+                                  const img = e.currentTarget;
+                                  img.style.display = "none";
+                                  const placeholder = img.nextElementSibling as HTMLElement | null;
+                                  if (placeholder) placeholder.style.display = "flex";
+                                }}
                               />
+                              <div
+                                className="w-32 h-24 rounded-xl border border-dashed border-neutral-200 bg-neutral-50 items-center justify-center text-[10px] text-neutral-400 text-center px-2"
+                                style={{ display: "none" }}
+                              >
+                                foto no disponible
+                              </div>
                             </a>
                             <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wide">{weekLabel}</p>
                             <p className="text-xs text-neutral-700 leading-tight lowercase">{title}</p>
+                            <form action={resetExtraCompletion}>
+                              <input type="hidden" name="completionId" value={ec.id} />
+                              <input type="hidden" name="userId" value={ec.user_id} />
+                              <button
+                                type="submit"
+                                className="text-[10px] text-red-400 hover:text-red-600 transition-colors"
+                                title="Eliminar esta entrega para que la persona pueda volver a subir"
+                                onClick={(e) => {
+                                  if (!confirm("¿Eliminar esta entrega? La persona podrá volver a subir evidencia.")) e.preventDefault();
+                                }}
+                              >
+                                ↺ resetear
+                              </button>
+                            </form>
                           </div>
                         );
                       })}

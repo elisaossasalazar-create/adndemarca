@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { setSetting, adjustUserPointsDelta, deleteUser } from "@/lib/db";
+import { setSetting, adjustUserPointsDelta, deleteUser, deleteExtraCompletion } from "@/lib/db";
+import { getEffectivePoints } from "@/lib/points.server";
 
 async function requireAdmin(): Promise<void> {
   const session = await auth();
@@ -36,6 +37,18 @@ export async function adjustPoints(formData: FormData) {
   if (!userId || isNaN(delta) || delta === 0) return;
 
   adjustUserPointsDelta(userId, delta);
+  revalidatePath("/admin");
+}
+
+export async function resetExtraCompletion(formData: FormData) {
+  await requireAdmin();
+
+  const completionId = formData.get("completionId") as string;
+  const userId = formData.get("userId") as string;
+  if (!completionId || !userId) return;
+
+  const pts = getEffectivePoints();
+  deleteExtraCompletion(completionId, userId, pts.EXTRA_CHALLENGE);
   revalidatePath("/admin");
 }
 
