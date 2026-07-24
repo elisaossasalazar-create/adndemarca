@@ -698,10 +698,14 @@ function PostCard({
 
 function formatDate(dateStr: string): string {
   try {
-    const d = new Date(dateStr.includes("T") ? dateStr : dateStr + "T00:00:00Z");
+    let normalized = dateStr.replace(" ", "T");
+    if (!normalized.endsWith("Z") && !normalized.includes("+")) normalized += "Z";
+    const d = new Date(normalized);
+    if (isNaN(d.getTime())) return dateStr;
     return d.toLocaleDateString("es-CO", {
       day: "numeric",
       month: "short",
+      year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });

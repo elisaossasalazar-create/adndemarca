@@ -12,7 +12,9 @@ interface Notification {
 }
 
 function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr + "Z").getTime();
+  let normalized = dateStr.replace(" ", "T");
+  if (!normalized.endsWith("Z") && !normalized.includes("+")) normalized += "Z";
+  const diff = Date.now() - new Date(normalized).getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "ahora";
   if (mins < 60) return `hace ${mins} min`;
