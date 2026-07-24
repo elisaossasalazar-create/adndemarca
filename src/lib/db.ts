@@ -449,6 +449,14 @@ export function createCommunityPost(
   return db.prepare("SELECT * FROM community_posts WHERE id = ?").get(id) as unknown as CommunityPost;
 }
 
+export function updateCommunityPost(postId: string, userId: string, content: string): boolean {
+  const db = getDb();
+  const result = db.prepare(
+    "UPDATE community_posts SET content = ? WHERE id = ? AND user_id = ?"
+  ).run(content, postId, userId);
+  return (result.changes as number) > 0;
+}
+
 export function deleteCommunityPost(postId: string): void {
   const db = getDb();
   db.exec("BEGIN");
@@ -543,6 +551,38 @@ export function getCommunityPostById(postId: string): CommunityPost | undefined 
   const row = db.prepare("SELECT * FROM community_posts WHERE id = ?").get(postId) as unknown as CommunityPost | undefined;
   if (!row) return undefined;
   return { ...row };
+}
+
+export function deleteCommunityPostByOwner(postId: string, userId: string): boolean {
+  const db = getDb();
+  db.exec("BEGIN");
+  try {
+    const post = db.prepare("SELECT id FROM community_posts WHERE id = ? AND user_id = ?").get(postId, userId);
+    if (!post) { db.exec("ROLLBACK"); return false; }
+    db.prepare("DELETE FROM community_comments WHERE post_id = ?").run(postId);
+    db.prepare("DELETE FROM community_posts WHERE id = ?").run(postId);
+    db.exec("COMMIT");
+    return true;
+  } catch (e) {
+    db.exec("ROLLBACK");
+    throw e;
+  }
+}
+
+export function updateCommunityComment(commentId: string, userId: string, content: string): boolean {
+  const db = getDb();
+  const result = db.prepare(
+    "UPDATE community_comments SET content = ? WHERE id = ? AND user_id = ?"
+  ).run(content, commentId, userId);
+  return (result.changes as number) > 0;
+}
+
+export function deleteCommunityComment(commentId: string, userId: string): boolean {
+  const db = getDb();
+  const result = db.prepare(
+    "DELETE FROM community_comments WHERE id = ? AND user_id = ?"
+  ).run(commentId, userId);
+  return (result.changes as number) > 0;
 }
 
 export function createCommunityComment(

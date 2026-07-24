@@ -52,6 +52,35 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek,
     setPosts((ps) => ps.filter((p) => p.id !== postId));
   }
 
+  function handlePostUpdated(postId: string, content: string) {
+    setPosts((ps) => ps.map((p) => (p.id === postId ? { ...p, content } : p)));
+  }
+
+  function handleCommentDeleted(postId: string, commentId: string) {
+    setPosts((ps) =>
+      ps.map((p) =>
+        p.id === postId
+          ? { ...p, comments: p.comments.filter((c) => c.id !== commentId) }
+          : p
+      )
+    );
+  }
+
+  function handleCommentUpdated(postId: string, commentId: string, content: string) {
+    setPosts((ps) =>
+      ps.map((p) =>
+        p.id === postId
+          ? {
+              ...p,
+              comments: p.comments.map((c) =>
+                c.id === commentId ? { ...c, content } : c
+              ),
+            }
+          : p
+      )
+    );
+  }
+
   const retoPosts = posts.filter((p) => p.post_type === "reto");
   const librePosts = posts.filter((p) => p.post_type === "libre");
 
@@ -95,6 +124,9 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek,
           onPostCreated={handlePostCreated}
           onCommentAdded={handleCommentAdded}
           onPostDeleted={handlePostDeleted}
+          onPostUpdated={handlePostUpdated}
+          onCommentDeleted={handleCommentDeleted}
+          onCommentUpdated={handleCommentUpdated}
         />
       ) : (
         <Section
@@ -108,6 +140,9 @@ export default function CommunityTab({ initialPosts, currentUserId, currentWeek,
           onPostCreated={handlePostCreated}
           onCommentAdded={handleCommentAdded}
           onPostDeleted={handlePostDeleted}
+          onPostUpdated={handlePostUpdated}
+          onCommentDeleted={handleCommentDeleted}
+          onCommentUpdated={handleCommentUpdated}
         />
       )}
     </div>
@@ -125,6 +160,9 @@ function Section({
   onPostCreated,
   onCommentAdded,
   onPostDeleted,
+  onPostUpdated,
+  onCommentDeleted,
+  onCommentUpdated,
 }: {
   title: string;
   placeholder: string;
@@ -136,6 +174,9 @@ function Section({
   onPostCreated: (post: CommunityPost) => void;
   onCommentAdded: (postId: string, comment: CommunityComment) => void;
   onPostDeleted: (postId: string) => void;
+  onPostUpdated: (postId: string, content: string) => void;
+  onCommentDeleted: (postId: string, commentId: string) => void;
+  onCommentUpdated: (postId: string, commentId: string, content: string) => void;
 }) {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -283,9 +324,13 @@ function Section({
               key={post.id}
               post={post}
               isMe={post.user_id === currentUserId}
+              currentUserId={currentUserId}
               isAdmin={isAdmin}
               onCommentAdded={(comment) => onCommentAdded(post.id, comment)}
               onDeleted={() => onPostDeleted(post.id)}
+              onUpdated={(content) => onPostUpdated(post.id, content)}
+              onCommentDeleted={(commentId) => onCommentDeleted(post.id, commentId)}
+              onCommentUpdated={(commentId, content) => onCommentUpdated(post.id, commentId, content)}
             />
           ))}
         </div>
@@ -297,21 +342,41 @@ function Section({
 function PostCard({
   post,
   isMe,
+  currentUserId,
   isAdmin,
   onCommentAdded,
   onDeleted,
+  onUpdated,
+  onCommentDeleted,
+  onCommentUpdated,
 }: {
   post: CommunityPost;
   isMe: boolean;
+  currentUserId: string;
   isAdmin: boolean;
   onCommentAdded: (comment: CommunityComment) => void;
   onDeleted: () => void;
+  onUpdated: (content: string) => void;
+  onCommentDeleted: (commentId: string) => void;
+  onCommentUpdated: (commentId: string, content: string) => void;
 }) {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Post inline edit
+  const [editing, setEditing] = useState(false);
+  const [editText, setEditText] = useState(post.content);
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  // Comment edit/delete state
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingCommentText, setEditingCommentText] = useState("");
+  const [savingComment, setSavingComment] = useState(false);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
 
   async function handleDelete() {
     if (!confirm("¿Eliminar esta publicación y sus comentarios?")) return;
@@ -323,6 +388,28 @@ function PostCard({
       // silently ignore
     } finally {
       setDeleting(false);
+    }
+  }
+
+  async function handleSaveEdit() {
+    const trimmed = editText.trim();
+    if (!trimmed) { setEditError("El contenido no puede estar vacío."); return; }
+    setSaving(true);
+    setEditError(null);
+    try {
+      const res = await fetch(`/api/community/${post.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: trimmed }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setEditError(data.error ?? "No se pudo guardar."); return; }
+      onUpdated(data.content);
+      setEditing(false);
+    } catch {
+      setEditError("Error al guardar. Intenta de nuevo.");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -348,6 +435,46 @@ function PostCard({
       setError("Error al comentar. Intenta de nuevo.");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleDeleteComment(commentId: string) {
+    if (!confirm("¿Eliminar este comentario?")) return;
+    setDeletingCommentId(commentId);
+    try {
+      const res = await fetch(`/api/community/${post.id}/comments/${commentId}`, { method: "DELETE" });
+      if (res.ok) onCommentDeleted(commentId);
+    } catch {
+      // silently ignore
+    } finally {
+      setDeletingCommentId(null);
+    }
+  }
+
+  function startEditComment(comment: CommunityComment) {
+    setEditingCommentId(comment.id);
+    setEditingCommentText(comment.content);
+  }
+
+  async function handleSaveComment(commentId: string) {
+    const trimmed = editingCommentText.trim();
+    if (!trimmed) return;
+    setSavingComment(true);
+    try {
+      const res = await fetch(`/api/community/${post.id}/comments/${commentId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: trimmed }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        onCommentUpdated(commentId, data.content);
+        setEditingCommentId(null);
+      }
+    } catch {
+      // silently ignore
+    } finally {
+      setSavingComment(false);
     }
   }
 
@@ -378,7 +505,24 @@ function PostCard({
               tú
             </span>
           )}
-          {isAdmin && (
+          {isMe && !editing && (
+            <>
+              <button
+                onClick={() => { setEditing(true); setEditText(post.content); setEditError(null); }}
+                className="text-[10px] text-neutral-400 hover:text-neutral-700 transition-colors px-1"
+              >
+                editar
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="text-[10px] text-neutral-400 hover:text-red-500 transition-colors disabled:opacity-40 px-1"
+              >
+                {deleting ? "…" : "eliminar"}
+              </button>
+            </>
+          )}
+          {isAdmin && !isMe && (
             <button
               onClick={handleDelete}
               disabled={deleting}
@@ -391,10 +535,40 @@ function PostCard({
         </div>
       </div>
 
-      {post.content && (
-        <p className="px-4 pb-3 text-sm text-neutral-800 leading-relaxed whitespace-pre-wrap">
-          {post.content}
-        </p>
+      {editing ? (
+        <div className="px-4 pb-3 flex flex-col gap-2">
+          <textarea
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            rows={4}
+            maxLength={1000}
+            autoFocus
+            className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#FF63A6] transition-colors resize-none"
+          />
+          {editError && <p className="text-xs text-red-500">{editError}</p>}
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={() => { setEditing(false); setEditError(null); }}
+              className="rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-500 hover:border-neutral-400 transition-colors"
+            >
+              cancelar
+            </button>
+            <button
+              onClick={handleSaveEdit}
+              disabled={saving || !editText.trim()}
+              className="rounded-full px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40"
+              style={{ backgroundColor: "var(--brand-pink)" }}
+            >
+              {saving ? "guardando…" : "guardar"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        post.content && (
+          <p className="px-4 pb-3 text-sm text-neutral-800 leading-relaxed whitespace-pre-wrap">
+            {post.content}
+          </p>
+        )
       )}
 
       {fileUrl && isImage && (
@@ -433,15 +607,69 @@ function PostCard({
 
       {showComments && (
         <div className="border-t border-neutral-100 bg-neutral-50/50">
-          {post.comments.map((c) => (
-            <div key={c.id} className="px-4 py-2.5 border-b border-neutral-100 last:border-0">
-              <div className="flex items-baseline gap-2 mb-0.5">
-                <span className="text-xs font-bold text-neutral-800 lowercase">{c.user_name}</span>
-                <span className="text-[10px] text-neutral-400">{formatDate(c.created_at)}</span>
+          {post.comments.map((c) => {
+            const isMyComment = c.user_id === currentUserId;
+            const isEditingThis = editingCommentId === c.id;
+            const isDeletingThis = deletingCommentId === c.id;
+            return (
+              <div key={c.id} className="px-4 py-2.5 border-b border-neutral-100 last:border-0">
+                <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xs font-bold text-neutral-800 lowercase">{c.user_name}</span>
+                    <span className="text-[10px] text-neutral-400">{formatDate(c.created_at)}</span>
+                  </div>
+                  {isMyComment && !isEditingThis && (
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <button
+                        onClick={() => startEditComment(c)}
+                        className="text-[10px] text-neutral-400 hover:text-neutral-700 transition-colors"
+                      >
+                        editar
+                      </button>
+                      <span className="text-[10px] text-neutral-300">·</span>
+                      <button
+                        onClick={() => handleDeleteComment(c.id)}
+                        disabled={isDeletingThis}
+                        className="text-[10px] text-neutral-400 hover:text-red-500 transition-colors disabled:opacity-40"
+                      >
+                        {isDeletingThis ? "…" : "eliminar"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {isEditingThis ? (
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <input
+                      type="text"
+                      value={editingCommentText}
+                      onChange={(e) => setEditingCommentText(e.target.value)}
+                      maxLength={500}
+                      autoFocus
+                      className="w-full rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs outline-none focus:border-[#FF63A6] transition-colors"
+                    />
+                    <div className="flex gap-1.5 justify-end">
+                      <button
+                        onClick={() => setEditingCommentId(null)}
+                        className="text-[10px] text-neutral-500 hover:text-neutral-700 transition-colors"
+                      >
+                        cancelar
+                      </button>
+                      <button
+                        onClick={() => handleSaveComment(c.id)}
+                        disabled={savingComment || !editingCommentText.trim()}
+                        className="rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white disabled:opacity-40"
+                        style={{ backgroundColor: "var(--brand-pink)" }}
+                      >
+                        {savingComment ? "…" : "guardar"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-neutral-700 leading-relaxed">{c.content}</p>
+                )}
               </div>
-              <p className="text-xs text-neutral-700 leading-relaxed">{c.content}</p>
-            </div>
-          ))}
+            );
+          })}
 
           <form onSubmit={handleComment} className="px-4 py-3 flex gap-2">
             <input
