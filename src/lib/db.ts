@@ -344,6 +344,10 @@ export function deleteUser(userId: string): void {
   }
 }
 
+export function resetUserPassword(userId: string, passwordHash: string): void {
+  getDb().prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(passwordHash, userId);
+}
+
 // ── Resources ────────────────────────────────────────────────────────────────
 
 export type ResourceCategory = "libro" | "video" | "podcast" | "substack";

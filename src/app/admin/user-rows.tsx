@@ -4,6 +4,57 @@ import { useState } from "react";
 import { adjustPoints, resetExtraCompletion } from "./actions";
 import DeleteUserButton from "./delete-user-button";
 
+function ResetPasswordForm({ userId, userName }: { userId: string; userName: string }) {
+  const [pw, setPw] = useState("");
+  const [status, setStatus] = useState<"idle" | "saving" | "ok" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (pw.length < 6) { setStatus("error"); setErrorMsg("Mínimo 6 caracteres."); return; }
+    if (!confirm(`¿Resetear la contraseña de ${userName}?\nLa nueva contraseña será: "${pw}"\nEscríbele para avisarle.`)) return;
+    setStatus("saving");
+    try {
+      const res = await fetch("/api/admin/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, newPassword: pw }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setStatus("error"); setErrorMsg(data.error ?? "Error"); return; }
+      setStatus("ok");
+      setPw("");
+    } catch {
+      setStatus("error");
+      setErrorMsg("Error de conexión.");
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-4 pt-3 border-t border-neutral-100">
+      <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wide mb-2">Resetear contraseña</p>
+      <div className="flex flex-wrap gap-2 items-center">
+        <input
+          type="text"
+          value={pw}
+          onChange={(e) => { setPw(e.target.value); setStatus("idle"); }}
+          placeholder="nueva contraseña"
+          className="border border-neutral-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-neutral-900 w-44"
+        />
+        <button
+          type="submit"
+          disabled={status === "saving" || !pw}
+          className="text-xs bg-neutral-100 hover:bg-neutral-200 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40 font-medium"
+        >
+          {status === "saving" ? "guardando…" : "guardar"}
+        </button>
+        {status === "ok" && <span className="text-xs text-green-600 font-medium">✓ contraseña actualizada</span>}
+        {status === "error" && <span className="text-xs text-red-500">{errorMsg}</span>}
+      </div>
+    </form>
+  );
+}
+
 interface AdminUserRow {
   id: string;
   full_name: string;
@@ -97,6 +148,7 @@ export default function AdminUserRows({ users, extrasByUser, challenges }: Props
                   ) : (
                     <div className="flex flex-wrap gap-3">
                       {extras.map((ec) => {
+
                         const ch = challengeMap[ec.challenge_id];
                         const weekLabel = ch ? `S${ch.week}` : ec.challenge_id;
                         const title = ch?.title ?? ec.challenge_id;
@@ -147,6 +199,7 @@ export default function AdminUserRows({ users, extrasByUser, challenges }: Props
                       })}
                     </div>
                   )}
+                  <ResetPasswordForm userId={user.id} userName={user.full_name} />
                 </td>
               </tr>
             )}
