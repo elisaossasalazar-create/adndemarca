@@ -22,11 +22,21 @@ export function getTodayUTCString(): string {
 export function getCurrentWeek(): number {
   const start = getCourseStartDate();
   const now = new Date();
-  const diffMs = now.getTime() - start.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  if (diffDays < 0) return 1;
-  const week = Math.floor(diffDays / 7) + 1;
-  return Math.min(Math.max(week, 1), 5);
+  const todayMs = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const startMs = start.getTime();
+
+  if (todayMs < startMs) return 1;
+
+  // Weeks start on Sundays. Find the first Sunday >= start + 7 days (= start of week 2).
+  const week2Base = new Date(startMs + 7 * 24 * 60 * 60 * 1000);
+  const dow = week2Base.getUTCDay(); // 0 = Sun
+  const daysToSun = dow === 0 ? 0 : 7 - dow;
+  const week2StartMs = week2Base.getTime() + daysToSun * 24 * 60 * 60 * 1000;
+
+  if (todayMs < week2StartMs) return 1;
+
+  const diffDays = Math.floor((todayMs - week2StartMs) / (24 * 60 * 60 * 1000));
+  return Math.min(Math.floor(diffDays / 7) + 2, 5);
 }
 
 const PHRASES = [
