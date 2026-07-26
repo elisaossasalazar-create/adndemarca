@@ -58,7 +58,7 @@ export const ALL_CHALLENGES: Challenge[] = [
     week: 2,
     title: "new bio, new you",
     description:
-      "Reescribe tu biografía de Instagram para que refleje tu narrativa y mézclale tu personalidad. Que yo entre a tu perfil y entienda qué haces y pueda ver tu personalidad entre líneas. Publica el antes/después.",
+      "Reescribe tu biografía de Instagram para que refleje tu diferencial y mézclale tu personalidad. Que yo entre a tu perfil y entienda qué haces y pueda ver tu personalidad entre líneas. Publica el antes/después.",
   },
   {
     id: "w2c2",
@@ -70,9 +70,9 @@ export const ALL_CHALLENGES: Challenge[] = [
   {
     id: "w2c3",
     week: 2,
-    title: "haz el diccionario de tu marca",
+    title: "el diccionario de tu marca",
     description:
-      "Escribe una lista de 10 palabras o frases que son muy tú y que harán parte de tu idioma de marca. Dales una descripción que sea muy tu marca y úsalas en un post esta semana. Publícalo y muéstranos la evidencia.",
+      "Si ya creaste el diccionario de tu marca para el reto de esta semana, usa una de esas palabras para un post, historia o para una idea de producto o servicio. Publícalo y muéstranos la evidencia.",
   },
   {
     id: "w2c4",
