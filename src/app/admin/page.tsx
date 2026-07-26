@@ -5,6 +5,7 @@ import { getEffectivePoints } from "@/lib/points.server";
 import { updatePointSettings } from "./actions";
 import { ALL_CHALLENGES } from "@/lib/challenges";
 import AdminUserRows from "./user-rows";
+import RestoreResourcesForm from "./restore-resources-form";
 
 export const dynamic = "force-dynamic";
 
@@ -117,6 +118,8 @@ export default async function AdminPage() {
             </form>
           </div>
         </section>
+
+        <RestoreResourcesForm />
 
         {/* ── Participantes ── */}
         <section>
