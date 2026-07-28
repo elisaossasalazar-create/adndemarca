@@ -19,10 +19,15 @@ export function getTodayUTCString(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Week boundaries are anchored to Colombia midnight (UTC-5) so Sunday feels
+// like Sunday for the primary audience regardless of server clock timezone.
+const COLOMBIA_OFFSET_MS = 5 * 60 * 60 * 1000;
+
 export function getCurrentWeek(): number {
   const start = getCourseStartDate();
-  const now = new Date();
-  const todayMs = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  // Shift "now" to Colombia local time, then read its calendar date in UTC
+  const nowColombia = new Date(Date.now() - COLOMBIA_OFFSET_MS);
+  const todayMs = Date.UTC(nowColombia.getUTCFullYear(), nowColombia.getUTCMonth(), nowColombia.getUTCDate());
   const startMs = start.getTime();
 
   if (todayMs < startMs) return 1;
