@@ -2,6 +2,10 @@
 // Formato ISO: "YYYY-MM-DD"
 const RAW_START = process.env.COURSE_START_DATE ?? "2026-07-14";
 
+// Colombia is UTC-5; use this offset so journal dates reflect the local calendar
+// day the participant is actually living, not the UTC day on the server.
+const COLOMBIA_OFFSET_MS = 5 * 60 * 60 * 1000;
+
 function parseDateUTC(dateStr: string): Date {
   const [y, m, d] = dateStr.split("-").map(Number);
   return new Date(Date.UTC(y, m - 1, d));
@@ -16,7 +20,8 @@ export function getCourseStartString(): string {
 }
 
 export function getTodayUTCString(): string {
-  return new Date().toISOString().slice(0, 10);
+  const nowColombia = new Date(Date.now() - COLOMBIA_OFFSET_MS);
+  return nowColombia.toISOString().slice(0, 10);
 }
 
 export function getCurrentWeek(): number {
