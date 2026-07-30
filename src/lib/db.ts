@@ -402,7 +402,7 @@ export function createResource(
   db.prepare(
     "INSERT INTO resources (id, category, title, description, url, submitted_by) VALUES (?, ?, ?, ?, ?, ?)"
   ).run(id, category, title, description, url, submittedBy);
-  return db.prepare("SELECT * FROM resources WHERE id = ??").get(id) as unknown as Resource;
+  return db.prepare("SELECT * FROM resources WHERE id = ?").get(id) as unknown as Resource;
 }
 
 export function deleteResource(id: string): void {
