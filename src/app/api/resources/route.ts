@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { createResource, getResources, type ResourceCategory } from "@/lib/db";
+import { createResource, getResources, getUserById, type ResourceCategory } from "@/lib/db";
 
 export async function GET() {
   const session = await auth();
@@ -15,13 +15,13 @@ const VALID_CATEGORIES = new Set<ResourceCategory>(["libro", "video", "podcast",
 
 export async function POST(request: Request) {
   const session = await auth();
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
-  if (!adminEmail || session.user.email?.toLowerCase() !== adminEmail) {
-    return NextResponse.json({ error: "Solo el admin puede publicar recursos." }, { status: 403 });
+  const user = getUserById(session.user.id);
+  if (!user) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
   let body: { category?: string; title?: string; description?: string; url?: string };
@@ -46,6 +46,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "El enlace debe comenzar con http:// o https://" }, { status: 400 });
   }
 
-  const resource = createResource(category, title, description, url);
+  const resource = createResource(category, title, description, url, user.full_name);
   return NextResponse.json({ ok: true, resource });
 }

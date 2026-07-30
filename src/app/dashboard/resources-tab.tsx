@@ -11,6 +11,7 @@ interface Resource {
   title: string;
   description: string;
   url: string;
+  submitted_by: string;
   created_at: string;
 }
 
@@ -42,7 +43,6 @@ export default function ResourcesTab({ isAdmin }: Props) {
       .finally(() => setLoading(false));
   }, []);
 
-  // Admin form state
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ category: "libro" as ResourceCategory, title: "", description: "", url: "" });
   const [submitting, setSubmitting] = useState(false);
@@ -88,90 +88,87 @@ export default function ResourcesTab({ isAdmin }: Props) {
   return (
     <div className="mx-auto w-full max-w-lg flex flex-col gap-5">
 
-      {/* Admin: add resource button / form */}
-      {isAdmin && (
-        <div className="rounded-2xl border border-neutral-100 p-4">
-          {!showForm ? (
-            <button
-              onClick={() => setShowForm(true)}
-              className="w-full text-sm font-medium text-neutral-400 hover:text-neutral-700 transition-colors text-left"
-            >
-              + agregar recurso
-            </button>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">Nuevo recurso</p>
+      {/* Add resource — visible to everyone */}
+      <div className="rounded-2xl border border-neutral-100 p-4">
+        {!showForm ? (
+          <button
+            onClick={() => setShowForm(true)}
+            className="w-full text-sm font-medium text-neutral-400 hover:text-neutral-700 transition-colors text-left"
+          >
+            + compartir un recurso
+          </button>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">Compartir recurso</p>
 
-              {/* Category selector */}
-              <div className="flex gap-2 flex-wrap">
-                {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.value}
-                    type="button"
-                    onClick={() => setForm((f) => ({ ...f, category: cat.value }))}
-                    className="rounded-full px-3 py-1.5 text-xs font-medium transition-colors border"
-                    style={
-                      form.category === cat.value
-                        ? { backgroundColor: cat.color, borderColor: "transparent", color: "#1a1a1a" }
-                        : { backgroundColor: "white", borderColor: "#e5e5e5", color: "#737373" }
-                    }
-                  >
-                    {cat.emoji} {cat.label}
-                  </button>
-                ))}
-              </div>
-
-              <input
-                type="text"
-                required
-                placeholder="Título"
-                value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                maxLength={120}
-                className="w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm outline-none focus:border-[#FF63A6] transition-colors"
-              />
-
-              <textarea
-                placeholder="Descripción corta (opcional)"
-                value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                maxLength={300}
-                rows={2}
-                className="w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm outline-none focus:border-[#FF63A6] transition-colors resize-none"
-              />
-
-              <input
-                type="url"
-                required
-                placeholder="https://..."
-                value={form.url}
-                onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
-                className="w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm outline-none focus:border-[#FF63A6] transition-colors"
-              />
-
-              {error && <p className="text-sm text-red-500">{error}</p>}
-
-              <div className="flex gap-2 justify-end">
+            <div className="flex gap-2 flex-wrap">
+              {CATEGORIES.map((cat) => (
                 <button
+                  key={cat.value}
                   type="button"
-                  onClick={() => { setShowForm(false); setError(null); }}
-                  className="rounded-full border border-neutral-200 px-4 py-1.5 text-xs font-medium text-neutral-500 hover:border-neutral-400 transition-colors"
+                  onClick={() => setForm((f) => ({ ...f, category: cat.value }))}
+                  className="rounded-full px-3 py-1.5 text-xs font-medium transition-colors border"
+                  style={
+                    form.category === cat.value
+                      ? { backgroundColor: cat.color, borderColor: "transparent", color: "#1a1a1a" }
+                      : { backgroundColor: "white", borderColor: "#e5e5e5", color: "#737373" }
+                  }
                 >
-                  cancelar
+                  {cat.emoji} {cat.label}
                 </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="rounded-full px-5 py-1.5 text-xs font-bold text-white disabled:opacity-40 transition hover:opacity-90"
-                  style={{ backgroundColor: "var(--brand-pink)" }}
-                >
-                  {submitting ? "publicando…" : "publicar"}
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-      )}
+              ))}
+            </div>
+
+            <input
+              type="text"
+              required
+              placeholder="Título"
+              value={form.title}
+              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+              maxLength={120}
+              className="w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm outline-none focus:border-[#FF63A6] transition-colors"
+            />
+
+            <textarea
+              placeholder="Descripción corta (opcional)"
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              maxLength={300}
+              rows={2}
+              className="w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm outline-none focus:border-[#FF63A6] transition-colors resize-none"
+            />
+
+            <input
+              type="url"
+              required
+              placeholder="https://..."
+              value={form.url}
+              onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
+              className="w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm outline-none focus:border-[#FF63A6] transition-colors"
+            />
+
+            {error && <p className="text-sm text-red-500">{error}</p>}
+
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => { setShowForm(false); setError(null); }}
+                className="rounded-full border border-neutral-200 px-4 py-1.5 text-xs font-medium text-neutral-500 hover:border-neutral-400 transition-colors"
+              >
+                cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="rounded-full px-5 py-1.5 text-xs font-bold text-white disabled:opacity-40 transition hover:opacity-90"
+                style={{ backgroundColor: "var(--brand-pink)" }}
+              >
+                {submitting ? "publicando…" : "publicar"}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
 
       {/* Category filter pills */}
       <div className="flex gap-2 flex-wrap">
@@ -262,7 +259,6 @@ function ResourceCard({
     <div className="rounded-2xl border border-neutral-100 p-4 flex flex-col gap-2">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          {/* Category badge */}
           <span
             className="text-[10px] font-bold uppercase tracking-wide rounded-full px-2.5 py-0.5 flex-shrink-0"
             style={{ backgroundColor: meta.color, color: "#1a1a1a" }}
@@ -288,15 +284,22 @@ function ResourceCard({
         <p className="text-xs text-neutral-500 leading-relaxed">{resource.description}</p>
       )}
 
-      <a
-        href={resource.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-1 inline-flex items-center gap-1.5 text-xs font-bold transition-opacity hover:opacity-70"
-        style={{ color: "var(--brand-pink)" }}
-      >
-        ver recurso →
-      </a>
+      <div className="flex items-center justify-between gap-2 mt-1">
+        <a
+          href={resource.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs font-bold transition-opacity hover:opacity-70"
+          style={{ color: "var(--brand-pink)" }}
+        >
+          ver recurso →
+        </a>
+        {resource.submitted_by && (
+          <span className="text-[10px] text-neutral-400 lowercase">
+            por {resource.submitted_by}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

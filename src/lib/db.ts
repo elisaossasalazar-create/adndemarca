@@ -58,6 +58,7 @@ const SCHEMA_STATEMENTS = [
     title TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     url TEXT NOT NULL,
+    submitted_by TEXT NOT NULL DEFAULT '',
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
   `CREATE TABLE IF NOT EXISTS community_posts (
@@ -109,28 +110,23 @@ function getDb(): DatabaseSync {
   // migrations
   try { global.__db!.exec("ALTER TABLE community_posts ADD COLUMN post_type TEXT NOT NULL DEFAULT 'reto'"); } catch { /* column already exists */ }
   try { global.__db!.exec("ALTER TABLE notifications ADD COLUMN type TEXT NOT NULL DEFAULT 'comment'"); } catch { /* column already exists */ }
+  try { global.__db!.exec("ALTER TABLE resources ADD COLUMN submitted_by TEXT NOT NULL DEFAULT ''"); } catch { /* column already exists */ }
 
   // One-time fix: weeks start on Sundays; anything stored as week 2 before 2026-07-26 belongs to week 1.
   const weekFixDone = (global.__db!.prepare("SELECT value FROM settings WHERE key = 'migration_week_fix_v1'").get() as { value: string } | undefined)?.value;
   if (!weekFixDone) {
     const db = global.__db!;
-    // Find weekly points value to deduct from users who got paid twice (completed week 1 AND week 2 before the fix)
     const weeklyPtsRow = db.prepare("SELECT value FROM settings WHERE key = 'points_weekly'").get() as { value: string } | undefined;
     const weeklyPts = weeklyPtsRow ? (parseInt(weeklyPtsRow.value) || 50) : 50;
-    // Deduct points for users who have BOTH week_number=1 AND week_number=2 (double-counted)
     const doubleUsers = db.prepare(
       "SELECT a.user_id FROM weekly_completions a JOIN weekly_completions b ON a.user_id = b.user_id WHERE a.week_number = 1 AND b.week_number = 2"
     ).all() as { user_id: string }[];
     for (const { user_id } of doubleUsers) {
       db.prepare("UPDATE users SET points_total = MAX(0, points_total - ?) WHERE id = ?").run(weeklyPts, user_id);
     }
-    // Delete week_number=2 rows for users who already have week_number=1
     db.prepare("DELETE FROM weekly_completions WHERE week_number = 2 AND user_id IN (SELECT user_id FROM weekly_completions WHERE week_number = 1)").run();
-    // Rename remaining week_number=2 → week_number=1
     db.prepare("UPDATE weekly_completions SET week_number = 1 WHERE week_number = 2").run();
-    // Fix community posts made before week 2 truly started
     db.prepare("UPDATE community_posts SET week_number = 1 WHERE week_number = 2 AND created_at < '2026-07-26'").run();
-    // Mark migration done
     db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('migration_week_fix_v1', '1')").run();
   }
 
@@ -382,6 +378,7 @@ export interface Resource {
   title: string;
   description: string;
   url: string;
+  submitted_by: string;
   created_at: string;
 }
 
@@ -398,13 +395,14 @@ export function createResource(
   title: string,
   description: string,
   url: string,
+  submittedBy: string = "",
 ): Resource {
   const db = getDb();
   const id = randomUUID();
   db.prepare(
-    "INSERT INTO resources (id, category, title, description, url) VALUES (?, ?, ?, ?, ?)"
-  ).run(id, category, title, description, url);
-  return db.prepare("SELECT * FROM resources WHERE id = ?").get(id) as unknown as Resource;
+    "INSERT INTO resources (id, category, title, description, url, submitted_by) VALUES (?, ?, ?, ?, ?, ?)"
+  ).run(id, category, title, description, url, submittedBy);
+  return db.prepare("SELECT * FROM resources WHERE id = ??").get(id) as unknown as Resource;
 }
 
 export function deleteResource(id: string): void {
