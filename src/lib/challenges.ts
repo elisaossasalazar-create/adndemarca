@@ -15,7 +15,7 @@ export const POINTS = {
 export type PointsConfig = { JOURNAL_DAILY: number; WEEKLY_HOTMART: number; EXTRA_CHALLENGE: number };
 
 export const ALL_CHALLENGES: Challenge[] = [
-  // ── Semana 1 — Diferencial ──────────────────────────────────────────────
+  // ── Semana 1 — Diferencial ──────────────────────────────────────────────────────
   {
     id: "w1c1",
     week: 1,
@@ -52,7 +52,7 @@ export const ALL_CHALLENGES: Challenge[] = [
       "Crea una encuesta corta (Google Forms, historia de Instagram con caja de preguntas, o WhatsApp) en la que le muestres a las personas en qué quieres que se diferencie tu marca, y pregúntales si estarían dispuestos a comprarte o si verían tu contenido. Ojo: no le digas a la gente que es tu marca — dile que es una marca hipotética para recibir respuestas más honestas.",
   },
 
-  // ── Semana 2 — Narrativa y códigos verbales ──────────────────────────────
+  // ── Semana 2 — Narrativa y códigos verbales ──────────────────────────────────────────
   {
     id: "w2c1",
     week: 2,
@@ -89,44 +89,44 @@ export const ALL_CHALLENGES: Challenge[] = [
       "Pregúntale a 3 personas que te conocen muy bien qué es lo que sienten que más te representa, cuáles son esas cosas que siempre dicen de ti, y cómo es tu forma de ser. Elige 1 cosa que ellos tengan en común y crea una idea de contenido, producto o servicio. Muéstranos la idea.",
   },
 
-  // ── Semana 3 — Códigos visuales y comunicación ───────────────────────────
+  // ── Semana 3 — Códigos visuales y comunicación ───────────────────────────────────────
   {
     id: "w3c1",
     week: 3,
     title: "la repetición de la repetidera",
     description:
-      "Define tu territorio de marca: el mensaje o tema que vas a repetir siempre. Deja la evidencia aquí.",
+      "Define 5 códigos visuales que vas a tener en tu marca y en toda su comunicación. Deja la evidencia aquí.",
   },
   {
     id: "w3c2",
     week: 3,
     title: "lo que es tan tú",
     description:
-      "Identifica algo que haces, dices o piensas que es completamente tuyo — algo que, si alguien te conoce, sabe que viene de ti. Tradúcelo en UNA nueva idea de producto, servicio o arte. Muéstranos la evidencia.",
+      "Identifica algo que te guste, uno de tus referentes... sea una película, canción, pintura, artista, etc y tradúcelo en UNA nueva idea de producto, servicio o contenido. Muéstranos la evidencia.",
   },
   {
     id: "w3c3",
     week: 3,
-    title: "el código que se repite",
+    title: "hello, nice to meet you",
     description:
-      "Elige un elemento visual que vayas a repetir intencionalmente de ahora en adelante y úsalo en 2 publicaciones o historias distintas esta semana. Publícalo y muéstranos la evidencia.",
+      "Define en una sola frase tu narrativa, esa frase en la que le digas al mundo quién eres mezclado con tu personalidad, escríbelo y muéstranos la evidencia.",
   },
   {
     id: "w3c4",
     week: 3,
-    title: "el antes y el sesgo",
+    title: "mis colores y tipografías",
     description:
-      "Elige un sesgo cognitivo que viste en clase y reescribe un mensaje de venta o caption usando ese sesgo a propósito. Publica el mensaje.",
+      "Elige una paleta de colores y al menos 2 tipografías que representen a tu marca. Muéstranos la evidencia.",
   },
   {
     id: "w3c5",
     week: 3,
     title: "del moodboard a la realidad",
     description:
-      "Crea un moodboard de tu universo visual (Pinterest, Canva, lo que sea) y luego reinterpreta UNA de esas referencias con tu propio contenido, empaque de producto, set de grabación, portada de una canción, etc. Convierte inspiración en pieza real que te represente.",
+      "Crea un moodboard de tu universo visual (Pinterest, Canva, lo que sea) en el que incluyas imágenes de referencia de como se va a sentir y como se va a ver tu marca. Muéstranos la evidencia.",
   },
 
-  // ── Semana 4 — Redes sociales ────────────────────────────────────────────
+  // ── Semana 4 — Redes sociales ────────────────────────────────────────────────────
   {
     id: "w4c1",
     week: 4,
@@ -163,13 +163,13 @@ export const ALL_CHALLENGES: Challenge[] = [
       "Crea tu calendario de contenido para la próxima semana completa y compártelo como una historia para comprometerte públicamente. Muéstranos la evidencia.",
   },
 
-  // ── Semana 5 — Estrategias ───────────────────────────────────────────────
+  // ── Semana 5 — Estrategias ───────────────────────────────────────────────────────
   {
     id: "w5c1",
     week: 5,
     title: "mamá diseñe mi primera estrategia",
     description:
-      "Elige UNO de los 3 tipos (venta, posicionamiento o fidelización) según lo que tu marca necesite más ahora, y diseña una mini-estrategia concreta: qué vas a hacer, cuándo, en qué canal. Ejecútala esta semana, aunque sea en pequeña escala. Muéstranos la evidencia.",
+      "Elige UNO de los 3 tipos (venta, posicionamiento o fidelización) según lo que tu marca necesite más ahora, y diseña una mini-estrategia concreta: qué vas a hacer, cuándo, en qué canal. Ejécutala esta semana, aunque sea en pequeña escala. Muéstranos la evidencia.",
   },
   {
     id: "w5c2",
