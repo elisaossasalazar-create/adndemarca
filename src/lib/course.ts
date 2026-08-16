@@ -46,7 +46,8 @@ export function getCurrentWeek(): number {
   if (todayMs < week2StartMs) return 1;
 
   const diffDays = Math.floor((todayMs - week2StartMs) / (24 * 60 * 60 * 1000));
-  return Math.min(Math.floor(diffDays / 7) + 2, 5);
+  // Capped at 4 — week 5 session is postponed. Update to 5 when it's ready.
+  return Math.min(Math.floor(diffDays / 7) + 2, 4);
 }
 
 const PHRASES = [
